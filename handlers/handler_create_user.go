@@ -1,18 +1,21 @@
-package main
+package handlers
 
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/yizhong187/CVWO/database"
+	"github.com/yizhong187/CVWO/models"
 )
 
-func handlerCreateUser(w http.ResponseWriter, r *http.Request) {
+func HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodPost {
 		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	var newUser User
+	var newUser models.User
 	err := json.NewDecoder(r.Body).Decode(&newUser)
 	if err != nil {
 		http.Error(w, "Error parsing request body", http.StatusBadRequest)
@@ -20,7 +23,7 @@ func handlerCreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Insert newUser into the database
-	_, err = db.Exec("INSERT INTO public.user_data (name) VALUES ($1)", newUser.Name)
+	_, err = database.GetDB().Exec("INSERT INTO public.user_data (name) VALUES ($1)", newUser.Name)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
