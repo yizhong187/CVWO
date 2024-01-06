@@ -2,8 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
+	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/yizhong187/CVWO/database"
 	"github.com/yizhong187/CVWO/models"
 	"github.com/yizhong187/CVWO/util"
@@ -11,21 +15,43 @@ import (
 
 func HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 
+	godotenv.Load(".env")
+
+	userTable := os.Getenv("DB_USERS_TABLE")
+
+	if userTable == "" {
+		log.Fatal("userTable is not set in the environment")
+	}
+
 	// Check if request is a POST request
 	if r.Method != http.MethodPost {
 		util.RespondWithError(w, http.StatusMethodNotAllowed, "Only POST method is allowed")
 		return
 	}
 
-	var newUser models.User
-	err := json.NewDecoder(r.Body).Decode(&newUser)
+	type RequestData struct {
+		Username string `json:"username"`
+	}
+
+	var requestData RequestData
+
+	// Parsing JSON data from POST method
+	err := json.NewDecoder(r.Body).Decode(&requestData)
 	if err != nil {
 		util.RespondWithError(w, http.StatusBadRequest, "Error parsing request body")
 		return
 	}
 
+	newUser := models.User{
+		Name:     requestData.Username,
+		UserType: "normal",
+	}
+
+	log.Print(newUser)
+
 	// Insert newUser into the database
-	_, err = database.GetDB().Exec("INSERT INTO public.user_data (name) VALUES ($1)", newUser.Name)
+	query := fmt.Sprintf("INSERT INTO %s (username, usertype) VALUES ($1, $2)", userTable)
+	_, err = database.GetDB().Exec(query, newUser.Name, newUser.UserType)
 	if err != nil {
 		util.RespondWithError(w, http.StatusInternalServerError, "Internal Server Error")
 		return
