@@ -7,11 +7,13 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
+	"github.com/yizhong187/CVWO/database"
+	"github.com/yizhong187/CVWO/handlers"
 )
 
 func main() {
 
-	initDB()
+	database.InitDB()
 
 	godotenv.Load(".env")
 
@@ -25,10 +27,10 @@ func main() {
 
 	v1Router := chi.NewRouter()
 
-	v1Router.Get("/healthz", handlerReadiness)
-	v1Router.Get("/err", handlerErr)
-	v1Router.Get("/user", handlerUser)
-	v1Router.Get("/createuser", handlerCreateUser)
+	v1Router.Get("/healthz", handlers.HandlerReadiness)
+	v1Router.Get("/err", handlers.HandlerErr)
+	v1Router.Get("/user", handlers.HandlerUser)
+	v1Router.Get("/createuser", handlers.HandlerCreateUser)
 
 	router.Mount("/v1", v1Router)
 
