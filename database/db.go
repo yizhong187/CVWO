@@ -1,4 +1,4 @@
-package db
+package database
 
 import (
 	"database/sql"
@@ -13,7 +13,7 @@ import (
 var db *sql.DB
 
 // initDB initializes the database connection
-func initDB() {
+func InitDB() {
 
 	err := godotenv.Load()
 	if err != nil {
@@ -34,4 +34,8 @@ func initDB() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func GetDB() *sql.DB {
+	return db
 }
