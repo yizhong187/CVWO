@@ -30,7 +30,7 @@ func main() {
 	v1Router.Get("/healthz", handlers.HandlerReadiness)
 	v1Router.Get("/err", handlers.HandlerErr)
 	v1Router.Get("/user", handlers.HandlerUser)
-	v1Router.Get("/createuser", handlers.HandlerCreateUser)
+	v1Router.Post("/createuser", handlers.HandlerCreateUser)
 
 	router.Mount("/v1", v1Router)
 
