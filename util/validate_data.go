@@ -1,4 +1,4 @@
-package main
+package util
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"github.com/yizhong187/CVWO/models"
 )
 
-func useCreationValidation(user models.User) error {
+func UseCreationValidation(user models.User) error {
 	if user.Name == "" {
 		return fmt.Errorf("name is required")
 	}
