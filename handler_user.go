@@ -2,33 +2,36 @@ package main
 
 import (
 	"database/sql"
-	"encoding/json"
 	"net/http"
+	"os"
+
+	"github.com/joho/godotenv"
 )
 
 func handlerUser(w http.ResponseWriter, r *http.Request) {
-	// Assuming you're retrieving user by an ID passed as a query parameter
-	// http://www.example.com/user?id=123
 
-	//userID := r.URL.Query().Get("id")
-	userID := "1"
+	godotenv.Load(".env")
+
+	userDataTable := os.Getenv("DB_USERDATA_TABLE")
+
+	userID := r.URL.Query().Get("id")
 	if userID == "" {
-		http.Error(w, "User ID is required", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "User ID is required")
 		return
 	}
 
 	var user User
-	err := db.QueryRow("SELECT id, name FROM public.user_data WHERE id = $1", userID).Scan(&user.ID, &user.Name)
+
+	err := db.QueryRow("SELECT id, name FROM $1 WHERE id = $2", userDataTable, userID).Scan(&user.ID, &user.Name)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			http.NotFound(w, r)
+			respondWithError(w, http.StatusNotFound, "User not found")
 		} else {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			respondWithError(w, http.StatusInternalServerError, "Internal Server Error")
 		}
 		return
 	}
 
 	// Respond with the user data in JSON format
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
+	respondWithJSON(w, http.StatusOK, user)
 }
