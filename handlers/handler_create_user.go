@@ -9,7 +9,8 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/yizhong187/CVWO/database"
-	"github.com/yizhong187/CVWO/models"
+
+	//"github.com/yizhong187/CVWO/models"
 	"github.com/yizhong187/CVWO/util"
 )
 
@@ -30,7 +31,7 @@ func HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type RequestData struct {
-		Username string `json:"username"`
+		Name string `json:"name"`
 	}
 
 	var requestData RequestData
@@ -42,18 +43,11 @@ func HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newUser := models.User{
-		Name:     requestData.Username,
-		UserType: "normal",
-	}
-
-	log.Print(newUser)
-
 	// Insert newUser into the database
-	query := fmt.Sprintf("INSERT INTO %s (username, usertype) VALUES ($1, $2)", userTable)
-	_, err = database.GetDB().Exec(query, newUser.Name, newUser.UserType)
+	query := fmt.Sprintf("INSERT INTO %s (name, type) VALUES ($1, $2)", userTable)
+	_, err = database.GetDB().Exec(query, requestData.Name, "normal")
 	if err != nil {
-		util.RespondWithError(w, http.StatusInternalServerError, "Internal Server Error")
+		util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: \n%v", err))
 		return
 	}
 
