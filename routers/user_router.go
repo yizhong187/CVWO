@@ -19,7 +19,7 @@ func UserRouter() *chi.Mux {
 		// User-related endpoints for creating, retrieving, updating, and deleting users
 		r.Post("/", handlers.HandlerCreateUser)
 		r.Get("/", handlers.HandlerAllUsers)
-		r.Get("/{name}", handlers.HandlerTest)
+		r.Get("/{name}", handlers.HandlerUser)
 		r.Put("/{name}", handlers.HandlerUpdateUser)
 		r.Delete("/{name}", handlers.HandlerDeleteUser)
 	})
