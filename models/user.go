@@ -6,5 +6,5 @@ type User struct {
 	ID        string    `json:"id"`
 	Name      string    `json:"name"`
 	Type      string    `json:"type"`
-	CreatedAt time.Time `json:"createdat"`
+	CreatedAt time.Time `json:"createdAt"`
 }
