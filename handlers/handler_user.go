@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -15,10 +16,12 @@ import (
 func HandlerUser(w http.ResponseWriter, r *http.Request) {
 
 	godotenv.Load(".env")
-
 	usersTable := os.Getenv("DB_USERS_TABLE")
-	query := fmt.Sprintf("SELECT * FROM %s WHERE name = $1", usersTable)
+	if usersTable == "" {
+		log.Fatal("usersTable is not set in the environment")
+	}
 
+	// Retrieve user name from URL query parameter
 	userName := r.URL.Query().Get("name")
 	if userName == "" {
 		util.RespondWithError(w, http.StatusBadRequest, "User's name is required")
@@ -26,6 +29,9 @@ func HandlerUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var user models.User
+
+	// Query the database for the user
+	query := fmt.Sprintf("SELECT * FROM %s WHERE name = $1", usersTable)
 	err := database.GetDB().QueryRow(query, userName).Scan(&user.ID, &user.Name, &user.Type, &user.CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
