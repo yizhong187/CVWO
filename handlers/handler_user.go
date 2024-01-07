@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 	"github.com/yizhong187/CVWO/database"
 	"github.com/yizhong187/CVWO/models"
@@ -21,8 +22,8 @@ func HandlerUser(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("usersTable is not set in the environment")
 	}
 
-	// Retrieve user name from URL query parameter
-	userName := r.URL.Query().Get("name")
+	// Retrieve user name from URL query
+	userName := chi.URLParam(r, "name")
 	if userName == "" {
 		util.RespondWithError(w, http.StatusBadRequest, "User's name is required")
 		return
