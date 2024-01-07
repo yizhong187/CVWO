@@ -13,8 +13,10 @@ func UserRouter() *chi.Mux {
 	//r.Use(middleware.Recoverer)
 
 	r.Route("/users", func(r chi.Router) {
-		r.Get("/healthz", handlers.HandlerReadiness)
-		r.Get("/err", handlers.HandlerErr)
+		r.Get("/healthz", handlers.HandlerReadiness) // Health check endpoint to verify the service status
+		r.Get("/err", handlers.HandlerErr)           // Endpoint to test error handling
+
+		// User-related endpoints for creating, retrieving, updating, and deleting users
 		r.Post("/", handlers.HandlerCreateUser)
 		r.Get("/", handlers.HandlerAllUsers)
 		r.Get("/{name}", handlers.HandlerTest)
