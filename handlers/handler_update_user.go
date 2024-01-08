@@ -21,12 +21,11 @@ func HandlerUpdateUser(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("usersTable is not set in the environment")
 	}
 
+	// Decode the JSON request body into UpdateRequestData struct
 	type UpdateRequestData struct {
 		OldName     string `json:"oldName"`
 		UpdatedName string `json:"updatedName"`
 	}
-
-	// Decode the JSON request body into UserUpdateRequest struct
 	var requestData UpdateRequestData
 	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
 		util.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
