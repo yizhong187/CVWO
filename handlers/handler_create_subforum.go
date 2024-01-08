@@ -14,6 +14,7 @@ import (
 	"github.com/yizhong187/CVWO/util"
 )
 
+// HandlerAllUsers handles the request to create a new subforum.
 func HandlerCreateSubforum(w http.ResponseWriter, r *http.Request) {
 
 	godotenv.Load(".env")
