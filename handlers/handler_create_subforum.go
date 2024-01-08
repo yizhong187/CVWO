@@ -16,33 +16,51 @@ import (
 
 func HandlerCreateSubforum(w http.ResponseWriter, r *http.Request) {
 
-	userName := chi.URLParam(r, "name")
-
 	godotenv.Load(".env")
-	subforumTable := os.Getenv("DB_SUBFORUM_TABLE")
+	subforumTable := os.Getenv("DB_SUBFORUMS_TABLE")
 	if subforumTable == "" {
-		log.Fatal("DB_SUBFORUM_TABLE is not set in the environment")
+		log.Fatal("DB_SUBFORUMS_TABLE is not set in the environment")
 	}
 
+	// Query the database for the user
+	userName := chi.URLParam(r, "name")
+	user, err := util.QueryUser(userName)
+	if err != nil {
+		if err.Error() == "User not found" {
+			util.RespondWithError(w, http.StatusNotFound, err.Error())
+		} else {
+			util.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+		return
+	}
+
+	// Check if user has "superuser" type to create subforum
+	if user.Type != "superuser" {
+		util.RespondWithError(w, http.StatusForbidden, "User does not have the required permissions")
+		return
+	}
+
+	// Decode the JSON request body into CreateSubforumRequestData struct
 	type CreateSubforumRequestData struct {
 		Name        string `json:"name"`
 		Description string `json:"description"`
 	}
-
 	var requestData CreateSubforumRequestData
-	err := json.NewDecoder(r.Body).Decode(&requestData)
+	err = json.NewDecoder(r.Body).Decode(&requestData)
 	if err != nil {
 		util.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 	defer r.Body.Close()
 
-	query := fmt.Sprintf("INSERT INTO %s (name, description, created_by, created_at, updated_by) VALUES ($1, $2, $3, NOW(), $3)", subforumTable)
-	_, err = database.GetDB().Exec(query, requestData.Name, requestData.Description, userName)
+	// Construct and execute SQL query to insert new subforum
+	query := fmt.Sprintf("INSERT INTO %s (name, description, created_by, updated_at) VALUES ($1, $2, $3, NOW())", subforumTable)
+	_, err = database.GetDB().Exec(query, requestData.Name, requestData.Description, user.ID)
 	if err != nil {
 		util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: \n%v", err))
 		return
 	}
 
+	// Respond with success message
 	util.RespondWithJSON(w, http.StatusCreated, struct{ Message string }{"Subforum created successfully"})
 }
