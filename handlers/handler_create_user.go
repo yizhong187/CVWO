@@ -25,7 +25,7 @@ func HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 		Name string `json:"name"`
 	}
 
-	// Decode the JSON request body into CreateUpdateRequest struct
+	// Decode the JSON request body into CreateRequestData struct
 	var requestData CreateRequestData
 	err := json.NewDecoder(r.Body).Decode(&requestData)
 	if err != nil {
@@ -34,7 +34,7 @@ func HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	// Insert newUser into the database
+	// // Construct and execute SQL query to insert new user
 	query := fmt.Sprintf("INSERT INTO %s (name, type) VALUES ($1, $2)", usersTable)
 	_, err = database.GetDB().Exec(query, requestData.Name, "normal")
 	if err != nil {
