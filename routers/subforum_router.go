@@ -14,7 +14,7 @@ func SubforumRouter() *chi.Mux {
 
 	// Subforum-related endpoints for creating, retrieving, updating, and deleting subforums
 	r.Post("/", handlers.HandlerCreateSubforum)
-	// r.Get("/", handlers.HandlerAllSubforums)
+	r.Get("/", handlers.HandlerAllSubforums)
 	r.Get("/{subforumID}", handlers.HandlerSubforum)
 	// r.Put("/{subforumID}", handlers.HandlerUpdateSubforum)
 	// r.Delete("/{subforumID}", handlers.HandlerDeleteSubforum)
