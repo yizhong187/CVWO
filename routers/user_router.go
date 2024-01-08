@@ -12,7 +12,7 @@ func UserRouter() *chi.Mux {
 	//r.Use(middleware.Logger)
 	//r.Use(middleware.Recoverer)
 
-	r.Route("/users", func(r chi.Router) {
+	r.Route("/", func(r chi.Router) {
 		r.Get("/healthz", handlers.HandlerReadiness) // Health check endpoint to verify the service status
 		r.Get("/err", handlers.HandlerErr)           // Endpoint to test error handling
 
@@ -22,6 +22,9 @@ func UserRouter() *chi.Mux {
 		r.Get("/{name}", handlers.HandlerUser)
 		r.Put("/{name}", handlers.HandlerUpdateUser)
 		r.Delete("/{name}", handlers.HandlerDeleteUser)
+
+		// Mount SubforumRouter under a specific user
+		r.Mount("/{name}/subforum", SubforumRouter())
 	})
 
 	return r
