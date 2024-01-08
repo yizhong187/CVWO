@@ -12,17 +12,12 @@ func SubforumRouter() *chi.Mux {
 	//r.Use(middleware.Logger)
 	//r.Use(middleware.Recoverer)
 
-	r.Route("/users", func(r chi.Router) {
-		r.Get("/healthz", handlers.HandlerReadiness) // Health check endpoint to verify the service status
-		r.Get("/err", handlers.HandlerErr)           // Endpoint to test error handling
-
-		// Subforum-related endpoints for creating, retrieving, updating, and deleting subforums
-		// r.Post("/", handlers.HandlerCreateSubforum)
-		// r.Get("/", handlers.HandlerAllSubforums)
-		// r.Get("/{subforumID}", handlers.HandlerSubforum)
-		// r.Put("/{name}", handlers.HandlerUpdateUser)
-		// r.Delete("/{name}", handlers.HandlerDeleteUser)
-	})
+	// Subforum-related endpoints for creating, retrieving, updating, and deleting subforums
+	r.Post("/", handlers.HandlerCreateSubforum)
+	// r.Get("/", handlers.HandlerAllSubforums)
+	r.Get("/{subforumID}", handlers.HandlerSubforum)
+	// r.Put("/{subforumID}", handlers.HandlerUpdateSubforum)
+	// r.Delete("/{subforumID}", handlers.HandlerDeleteSubforum)
 
 	return r
 }
