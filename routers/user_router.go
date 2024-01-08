@@ -23,6 +23,9 @@ func UserRouter() *chi.Mux {
 		r.Put("/{name}", handlers.HandlerUpdateUser)
 		r.Delete("/{name}", handlers.HandlerDeleteUser)
 
+		// Superuser-related endpoints for editting user types
+		r.Put("/{name}", handlers.HandlerUpdateUserType)
+
 		// Mount SubforumRouter under a specific user
 		r.Mount("/{name}/subforum", SubforumRouter())
 	})
