@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 	"github.com/yizhong187/CVWO/database"
+	"github.com/yizhong187/CVWO/handlers"
 	"github.com/yizhong187/CVWO/routers"
 )
 
@@ -31,7 +32,16 @@ func main() {
 	// v1Router.Get("/testing", handlers.HandlerTest)
 	// router.Mount("/v1", v1Router)
 
-	v2Router := routers.UserRouter()
+	// v2UserRouter := routers.UserRouter()
+	// router.Mount("/v2", v2UserRouter)
+
+	// Version 2 API routes
+	v2Router := chi.NewRouter()
+	v2Router.Mount("/users", routers.UserRouter())
+	v2Router.Get("/healthz", handlers.HandlerReadiness)
+	v2Router.Get("/err", handlers.HandlerErr)
+
+	// Mount v2Router under /v2 prefix
 	router.Mount("/v2", v2Router)
 
 	// Start the HTTP server on port 8080 and log any errors
