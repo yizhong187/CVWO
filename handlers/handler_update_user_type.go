@@ -45,12 +45,12 @@ func HandlerUpdateUserType(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Decode the JSON request body into EditUserTypeRequestData struct
-	type CreateSubforumRequestData struct {
+	type EditUserTypeRequestData struct {
 		Name       string `json:"name"`
 		NewType    string `json:"newType"`
 		SubforumID int    `json:"subforumID"`
 	}
-	var requestData CreateSubforumRequestData
+	var requestData EditUserTypeRequestData
 	err = json.NewDecoder(r.Body).Decode(&requestData)
 	if err != nil {
 		util.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
@@ -66,11 +66,22 @@ func HandlerUpdateUserType(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Query the database for the target user
+	target, err := util.QueryUser(requestData.Name)
+	if err != nil {
+		if err.Error() == "User not found" {
+			util.RespondWithError(w, http.StatusNotFound, err.Error())
+		} else {
+			util.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+		return
+	}
+
 	//Execute the update query at AdminsTable
 	if requestData.NewType == "admin" {
 		// Promote to admin: Insert into AdminsTable
 		insertQuery := fmt.Sprintf("INSERT INTO %s (admin_id, subforum_id) VALUES ($1, $2)", adminsTable)
-		_, err = database.GetDB().Exec(insertQuery, user.ID, requestData.SubforumID)
+		_, err = database.GetDB().Exec(insertQuery, target.ID, requestData.SubforumID)
 		if err != nil {
 			util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error promoting user to admin: \n%v", err))
 			return
@@ -78,7 +89,7 @@ func HandlerUpdateUserType(w http.ResponseWriter, r *http.Request) {
 	} else {
 		// Demote from admin: Delete from AdminsTable
 		deleteQuery := fmt.Sprintf("DELETE FROM %s WHERE admin_id = $1 and subforum_id = $2)", adminsTable)
-		_, err = database.GetDB().Exec(deleteQuery, user.ID, requestData.SubforumID)
+		_, err = database.GetDB().Exec(deleteQuery, target.ID, requestData.SubforumID)
 		if err != nil {
 			util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error demoting user from admin: \n%v", err))
 			return
