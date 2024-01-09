@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
@@ -13,51 +12,51 @@ import (
 	"github.com/yizhong187/CVWO/util"
 )
 
+// HandlerCreateThread handles the request to create a new thread.
 func HandlerTesting(w http.ResponseWriter, r *http.Request) {
 
 	godotenv.Load(".env")
-	subforumTable := os.Getenv("DB_SUBFORUMS_TABLE")
-	if subforumTable == "" {
-		util.RespondWithError(w, http.StatusInternalServerError, "DB_SUBFORUMS_TABLE is not set in the environment")
+	threadsTable := os.Getenv("DB_THREADS_TABLE")
+	if threadsTable == "" {
+		util.RespondWithError(w, http.StatusInternalServerError, "DB_THREADS_TABLE is not set in the environment")
 		return
 	}
 
-	// Decode the JSON request body
-	type UpdateSubforumRequestData struct {
-		NewName        string `json:"newName"`
-		NewDescription string `json:"newDescription"`
+	// Decode the JSON request body into CreateThreadRequest struct
+	type CreateThreadRequestData struct {
+		Title   string `json:"title"`
+		Content string `json:"content"`
 	}
-	var requestData UpdateSubforumRequestData
-	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
+
+	var requestData CreateThreadRequestData
+	err := json.NewDecoder(r.Body).Decode(&requestData)
+	if err != nil {
 		util.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 	defer r.Body.Close()
 
-	// Extract the username and subforumID from the URL parameter
-	userName := chi.URLParam(r, "name")
+	// Get subforumID and userName from the URL parameter, which is used to find userID
 	subforumID := chi.URLParam(r, "subforumID")
-
-	// Check if the user is an admin of the subforum
-	isAdmin, err := util.IsAdminOf(userName, subforumID)
-	log.Printf("%s's admin status: %v", userName, isAdmin)
+	userName := chi.URLParam(r, "name")
+	userID, err := util.QueryUserID(userName)
 	if err != nil {
-		util.RespondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	if !isAdmin {
-		util.RespondWithError(w, http.StatusForbidden, "User does not have the required permissions")
+		if err.Error() == "User not found" {
+			util.RespondWithError(w, http.StatusNotFound, "User not found")
+		} else {
+			util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: \n%v", err))
+		}
 		return
 	}
 
-	// Execute the update query
-	updateQuery := fmt.Sprintf("UPDATE %s SET name = $1, description = $2 WHERE id = $3", subforumTable)
-	_, err = database.GetDB().Exec(updateQuery, requestData.NewName, requestData.NewDescription, subforumID)
+	// Insert the new thread into the database
+	query := fmt.Sprintf("INSERT INTO %s (subforum_id, title, content, created_by, is_pinned, updated_at) VALUES ($1, $2, $3, $4, $5, NOW())", threadsTable)
+	_, err = database.GetDB().Exec(query, subforumID, requestData.Title, requestData.Content, userID, false)
 	if err != nil {
-		util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error updating subforum: \n%v", err))
+		util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: \n%v", err))
 		return
 	}
 
-	// Respond with a success message
-	util.RespondWithJSON(w, http.StatusOK, struct{ Message string }{"Subforum updated successfully"})
+	// Respond with success message
+	util.RespondWithJSON(w, http.StatusCreated, struct{ Message string }{"Thread created successfully"})
 }
