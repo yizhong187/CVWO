@@ -11,6 +11,27 @@ import (
 	"github.com/yizhong187/CVWO/models"
 )
 
+func QueryUser(userName string) (models.User, error) {
+	godotenv.Load(".env")
+	usersTable := os.Getenv("DB_USERS_TABLE")
+	if usersTable == "" {
+		return models.User{}, errors.New("DB_USERS_TABLE is not set in the environment")
+	}
+
+	var user models.User
+	query := fmt.Sprintf("SELECT id, name, type, created_at FROM %s WHERE name = $1", usersTable)
+	err := database.GetDB().QueryRow(query, userName).Scan(&user.ID, &user.Name, &user.Type, &user.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return models.User{}, errors.New("User not found! ")
+		} else {
+			return models.User{}, fmt.Errorf("Error retrieving user: %v", err)
+		}
+	}
+
+	return user, nil
+}
+
 func QueryUserType(userName string) (string, error) {
 	godotenv.Load(".env")
 	usersTable := os.Getenv("DB_USERS_TABLE")
@@ -32,25 +53,25 @@ func QueryUserType(userName string) (string, error) {
 	return userType, nil
 }
 
-func QueryUser(userName string) (models.User, error) {
+func QueryUserID(userName string) (string, error) {
 	godotenv.Load(".env")
 	usersTable := os.Getenv("DB_USERS_TABLE")
 	if usersTable == "" {
-		return models.User{}, errors.New("DB_USERS_TABLE is not set in the environment")
+		return "", errors.New("DB_USERS_TABLE is not set in the environment")
 	}
 
-	var user models.User
-	query := fmt.Sprintf("SELECT id, name, type, created_at FROM %s WHERE name = $1", usersTable)
-	err := database.GetDB().QueryRow(query, userName).Scan(&user.ID, &user.Name, &user.Type, &user.CreatedAt)
+	var userID string
+	query := fmt.Sprintf("SELECT id FROM %s WHERE name = $1", usersTable)
+	err := database.GetDB().QueryRow(query, userName).Scan(&userID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return models.User{}, errors.New("User not found! ")
+			return "", errors.New("User not found")
 		} else {
-			return models.User{}, fmt.Errorf("Error retrieving user: %v", err)
+			return "", fmt.Errorf("Error retrieving user ID: %v", err)
 		}
 	}
 
-	return user, nil
+	return userID, nil
 }
 
 func IsAdminOf(userName string, subforumID string) (bool, error) {
@@ -90,5 +111,3 @@ func checkAdminOfSubforum(userID, subforumID string) (bool, error) {
 
 	return exists, nil
 }
-
-// SELECT EXISTS(SELECT 1 FROM public.admins  WHERE admin_id =  AND subforum_id = 1)
