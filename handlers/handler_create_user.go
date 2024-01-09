@@ -21,11 +21,10 @@ func HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("usersTable is not set in the environment")
 	}
 
+	// Decode the JSON request body into CreateRequestData struct
 	type CreateRequestData struct {
 		Name string `json:"name"`
 	}
-
-	// Decode the JSON request body into CreateRequestData struct
 	var requestData CreateRequestData
 	err := json.NewDecoder(r.Body).Decode(&requestData)
 	if err != nil {
@@ -33,6 +32,12 @@ func HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
+
+	// Check for empty name or description
+	if requestData.Name == "" {
+		util.RespondWithError(w, http.StatusBadRequest, "Username is required")
+		return
+	}
 
 	// // Construct and execute SQL query to insert new user
 	query := fmt.Sprintf("INSERT INTO %s (name, type) VALUES ($1, $2)", usersTable)

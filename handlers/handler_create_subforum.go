@@ -14,7 +14,7 @@ import (
 	"github.com/yizhong187/CVWO/util"
 )
 
-// HandlerAllUsers handles the request to create a new subforum.
+// HandlerCreateSubforum handles the request to create a new subforum.
 func HandlerCreateSubforum(w http.ResponseWriter, r *http.Request) {
 
 	godotenv.Load(".env")
@@ -53,6 +53,12 @@ func HandlerCreateSubforum(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
+
+	// Check for empty name or description
+	if requestData.Name == "" || requestData.Description == "" {
+		util.RespondWithError(w, http.StatusBadRequest, "Name and description are required")
+		return
+	}
 
 	// Construct and execute SQL query to insert new subforum
 	query := fmt.Sprintf("INSERT INTO %s (name, description, created_by, updated_at) VALUES ($1, $2, $3, NOW())", subforumTable)
