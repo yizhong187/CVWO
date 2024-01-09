@@ -16,8 +16,11 @@ func SubforumRouter() *chi.Mux {
 	r.Post("/", handlers.HandlerCreateSubforum)
 	r.Get("/", handlers.HandlerAllSubforums)
 	r.Get("/{subforumID}", handlers.HandlerSubforum)
-	r.Put("/{subforumID}", handlers.HandlerTesting)
+	r.Put("/{subforumID}", handlers.HandlerUpdateSubforum)
 	// r.Delete("/{subforumID}", handlers.HandlerDeleteSubforum)
+
+	// Mount ThreadRouter under a specific subforum
+	r.Mount("/{subforumID}/threads", ThreadRouter())
 
 	return r
 }
