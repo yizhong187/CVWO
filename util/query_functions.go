@@ -52,3 +52,43 @@ func QueryUser(userName string) (models.User, error) {
 
 	return user, nil
 }
+
+func IsAdminOf(userName string, subforumID string) (bool, error) {
+	// Use QueryUser to find the user with the username
+	user, err := QueryUser(userName)
+	if err != nil {
+		return false, err
+	}
+
+	// Check user type
+	switch user.Type {
+	case "normal": // Normal users are not admins
+		return false, nil
+	case "superuser": // Superusers are admins of all subforums
+		return true, nil
+	case "admin": // Check if the user is an admin of the specific subforum
+		return checkAdminOfSubforum(user.ID, subforumID)
+	default:
+		return false, errors.New("unrecognized user type")
+	}
+}
+
+func checkAdminOfSubforum(userID, subforumID string) (bool, error) {
+	godotenv.Load(".env")
+	adminsTable := os.Getenv("DB_ADMINS_TABLE")
+	if adminsTable == "" {
+		return false, errors.New("DB_ADMINS_TABLE is not set in the environment")
+	}
+
+	// Query to check if a specific record exists in the admin table
+	query := fmt.Sprintf("SELECT EXISTS(SELECT 1 FROM %s WHERE admin_id = $1 AND subforum_id = $2)", adminsTable)
+	var exists bool
+	err := database.GetDB().QueryRow(query, userID, subforumID).Scan(&exists)
+	if err != nil {
+		return false, fmt.Errorf("Error querying admin table: %v", err)
+	}
+
+	return exists, nil
+}
+
+// SELECT EXISTS(SELECT 1 FROM public.admins  WHERE admin_id =  AND subforum_id = 1)
