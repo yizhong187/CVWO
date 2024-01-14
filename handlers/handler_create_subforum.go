@@ -45,6 +45,7 @@ func HandlerCreateSubforum(w http.ResponseWriter, r *http.Request) {
 	type CreateSubforumRequestData struct {
 		Name        string `json:"name"`
 		Description string `json:"description"`
+		PhotoURL    string `json:"photoURL"`
 	}
 	var requestData CreateSubforumRequestData
 	err = json.NewDecoder(r.Body).Decode(&requestData)
@@ -61,8 +62,8 @@ func HandlerCreateSubforum(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Construct and execute SQL query to insert new subforum
-	query := fmt.Sprintf("INSERT INTO %s (name, description, created_by, updated_at) VALUES ($1, $2, $3, NOW())", subforumTable)
-	_, err = database.GetDB().Exec(query, requestData.Name, requestData.Description, user.ID)
+	query := fmt.Sprintf("INSERT INTO %s (name, description, created_by, photo_url) VALUES ($1, $2, $3, $4)", subforumTable)
+	_, err = database.GetDB().Exec(query, requestData.Name, requestData.Description, user.ID, requestData.PhotoURL)
 	if err != nil {
 		util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: \n%v", err))
 		return
