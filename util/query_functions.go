@@ -111,3 +111,24 @@ func checkAdminOfSubforum(userID, subforumID string) (bool, error) {
 
 	return exists, nil
 }
+
+func QueryUsername(id string) (string, error) {
+	godotenv.Load(".env")
+	usersTable := os.Getenv("DB_USERS_TABLE")
+	if usersTable == "" {
+		return "", errors.New("DB_USERS_TABLE is not set in the environment")
+	}
+
+	var username string
+	query := fmt.Sprintf("SELECT name FROM %s WHERE id = $1", usersTable)
+	err := database.GetDB().QueryRow(query, id).Scan(&username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", errors.New("User not found")
+		} else {
+			return "", fmt.Errorf("Error retrieving user ID: %v", err)
+		}
+	}
+
+	return username, nil
+}
