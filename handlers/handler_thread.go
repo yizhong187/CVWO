@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
@@ -55,13 +56,28 @@ func HandlerThread(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Third SQL query to get replyCount for the thread
+	numThreadID, err := strconv.Atoi(threadID)
+	if err != nil {
+		util.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid Parameter: \n%v", err))
+		return
+	}
+
+	replyCount, err := util.QueryReplyCount(numThreadID)
+	if err != nil {
+		util.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error retrieving replycount: \n%v", err))
+		return
+	}
+
 	// Respond with thread and its replies using the RespondWithJSON function
 	response := struct {
-		Thread  models.Thread  `json:"thread"`
-		Replies []models.Reply `json:"replies"`
+		Thread     models.Thread  `json:"thread"`
+		Replies    []models.Reply `json:"replies"`
+		ReplyCount int            `json:"replyCount"`
 	}{
-		Thread:  thread,
-		Replies: replies,
+		Thread:     thread,
+		Replies:    replies,
+		ReplyCount: replyCount,
 	}
 	util.RespondWithJSON(w, http.StatusOK, response)
 }
