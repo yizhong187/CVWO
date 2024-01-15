@@ -50,6 +50,10 @@ func main() {
 	v2Router.Mount("/users", routers.UserRouter())
 	v2Router.Get("/healthz", handlers.HandlerReadiness)
 	v2Router.Get("/err", handlers.HandlerErr)
+	v2Router.Post("/register", handlers.HandlerRegister)
+	v2Router.Post("/login", handlers.HandlerLogin)
+	v2Router.Get("/user", handlers.HandlerTesting)
+	v2Router.Get("/logout", handlers.HandlerLogout)
 
 	// Mount v2Router under /v2 prefix
 	router.Mount("/v2", v2Router)
