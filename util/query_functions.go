@@ -132,3 +132,37 @@ func QueryUsername(id string) (string, error) {
 
 	return username, nil
 }
+
+func QueryReplyCount(threadID int) (int, error) {
+	godotenv.Load(".env")
+	repliesTable := os.Getenv("DB_REPLIES_TABLE")
+	if repliesTable == "" {
+		return -1, errors.New("DB_REPLIES_TABLE is not set in the environment")
+	}
+
+	var count int
+	query := fmt.Sprintf("SELECT COUNT(*) FROM %s WHERE thread_id = $1", repliesTable)
+	err := database.GetDB().QueryRow(query, threadID).Scan(&count)
+	if err != nil {
+		return 0, fmt.Errorf("Error retrieving reply count: %v", err)
+	}
+
+	return count, nil
+}
+
+func QueryUsernameTaken(username string) (bool, error) {
+	godotenv.Load(".env")
+	usersTable := os.Getenv("DB_TESTING_USERS_TABLE")
+	if usersTable == "" {
+		return false, errors.New("DB_TESTING_USERS_TABLE is not set in the environment")
+	}
+
+	var taken bool
+	query := fmt.Sprintf("SELECT EXISTS(SELECT 1 FROM %s WHERE username = $1)", usersTable)
+	err := database.GetDB().QueryRow(query, username).Scan(&taken)
+	if err != nil {
+		return false, fmt.Errorf("Error checking username taken: %v", err)
+	}
+
+	return taken, nil
+}
