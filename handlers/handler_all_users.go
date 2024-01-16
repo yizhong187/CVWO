@@ -17,7 +17,7 @@ func HandlerAllUsers(w http.ResponseWriter, r *http.Request) {
 	godotenv.Load(".env")
 
 	usersTable := os.Getenv("DB_USERS_TABLE")
-	query := fmt.Sprintf("SELECT * FROM %s", usersTable)
+	query := fmt.Sprintf("SELECT id, name, type, created_at FROM %s", usersTable)
 
 	// Execute sql query and return a rows result set
 	rows, err := database.GetDB().Query(query)

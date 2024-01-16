@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
@@ -18,7 +17,7 @@ import (
 func HandlerTesting(w http.ResponseWriter, r *http.Request) {
 
 	godotenv.Load(".env")
-	usersTable := os.Getenv("DB_TESTING_USERS_TABLE")
+	usersTable := os.Getenv("DB_USERS_TABLE")
 	if usersTable == "" {
 		log.Fatal("usersTable is not set in the environment")
 	}
@@ -58,7 +57,7 @@ func HandlerTesting(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var user models.TestingUser
-	query := fmt.Sprintf("SELECT id, username, type, created_at FROM %s WHERE id = $1", usersTable)
+	query := fmt.Sprintf("SELECT id, name, type, created_at FROM %s WHERE id = $1", usersTable)
 	err = database.GetDB().QueryRow(query, claims.Subject).Scan(&user.ID, &user.Name, &user.Type, &user.CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -71,17 +70,4 @@ func HandlerTesting(w http.ResponseWriter, r *http.Request) {
 	}
 
 	util.RespondWithJSON(w, http.StatusOK, user)
-}
-
-func HandlerLogout(w http.ResponseWriter, r *http.Request) {
-	// Set the token in an HTTP-only cookie
-	http.SetCookie(w, &http.Cookie{
-		Name:     "jwt",
-		Value:    "",
-		Expires:  time.Now().Add(-time.Hour),
-		HttpOnly: true,
-		Path:     "/", // Make sure the cookie is sent with every request to the server
-	})
-
-	util.RespondWithJSON(w, http.StatusOK, "Successfully logged out")
 }

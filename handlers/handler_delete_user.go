@@ -20,15 +20,15 @@ func HandlerDeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Retrieve user name from URL path parameter
-	userName := chi.URLParam(r, "name")
-	if userName == "" {
+	name := chi.URLParam(r, "name")
+	if name == "" {
 		util.RespondWithError(w, http.StatusBadRequest, "User's name is required")
 		return
 	}
 
 	// Delete the user from the database
 	query := fmt.Sprintf("DELETE FROM %s WHERE name = $1", usersTable)
-	result, err := database.GetDB().Exec(query, userName)
+	result, err := database.GetDB().Exec(query, name)
 	if err != nil {
 		util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: \n%v", err))
 		return

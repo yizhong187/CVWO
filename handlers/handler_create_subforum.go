@@ -24,8 +24,8 @@ func HandlerCreateSubforum(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Query the database for the user
-	userName := chi.URLParam(r, "name")
-	user, err := util.QueryUser(userName)
+	name := chi.URLParam(r, "name")
+	user, err := util.QueryUser(name)
 	if err != nil {
 		if err.Error() == "User not found" {
 			util.RespondWithError(w, http.StatusNotFound, err.Error())

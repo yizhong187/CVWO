@@ -40,10 +40,10 @@ func HandlerPostReply(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get threadID and userName (used to find userID) from the URL parameter
+	// Get threadID and name (used to find userID) from the URL parameter
 	threadID := chi.URLParam(r, "threadID")
-	userName := chi.URLParam(r, "name")
-	userID, err := util.QueryUserID(userName)
+	name := chi.URLParam(r, "name")
+	userID, err := util.QueryUserID(name)
 	if err != nil {
 		if err.Error() == "User not found" {
 			util.RespondWithError(w, http.StatusNotFound, "User not found")

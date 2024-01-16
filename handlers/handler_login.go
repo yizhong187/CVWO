@@ -18,9 +18,9 @@ import (
 func HandlerLogin(w http.ResponseWriter, r *http.Request) {
 
 	godotenv.Load(".env")
-	usersTable := os.Getenv("DB_TESTING_USERS_TABLE")
+	usersTable := os.Getenv("DB_USERS_TABLE")
 	if usersTable == "" {
-		log.Fatal("usersTable is not set in the environment")
+		log.Fatal("DB_USERS_TABLE is not set in the environment")
 	}
 	secretKey := os.Getenv("SECRET_KEY")
 	if usersTable == "" {
@@ -29,7 +29,7 @@ func HandlerLogin(w http.ResponseWriter, r *http.Request) {
 
 	// Decode the JSON request body into CreateRequestData struct
 	type CreateRequestData struct {
-		Username string `json:"username"`
+		Name     string `json:"name"`
 		Password string `json:"password"`
 	}
 	var requestData CreateRequestData
@@ -41,8 +41,8 @@ func HandlerLogin(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	// Check for empty name or description
-	if requestData.Username == "" {
-		util.RespondWithError(w, http.StatusBadRequest, "Username is required")
+	if requestData.Name == "" {
+		util.RespondWithError(w, http.StatusBadRequest, "Name is required")
 		return
 	} else if requestData.Password == "" {
 		util.RespondWithError(w, http.StatusBadRequest, "Password is required")
@@ -52,8 +52,8 @@ func HandlerLogin(w http.ResponseWriter, r *http.Request) {
 	// Construct and execute SQL query to retrieve passwordHash
 	var passwordHash string
 	var userID string
-	query := fmt.Sprintf("SELECT password_hash, id FROM %s WHERE username = $1;	", usersTable)
-	err = database.GetDB().QueryRow(query, requestData.Username).Scan(&passwordHash, &userID)
+	query := fmt.Sprintf("SELECT password_hash, id FROM %s WHERE name = $1;	", usersTable)
+	err = database.GetDB().QueryRow(query, requestData.Name).Scan(&passwordHash, &userID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			util.RespondWithError(w, http.StatusBadRequest, "User not found")

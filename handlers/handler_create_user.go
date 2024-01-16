@@ -35,7 +35,7 @@ func HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 
 	// Check for empty name or description
 	if requestData.Name == "" {
-		util.RespondWithError(w, http.StatusBadRequest, "Username is required")
+		util.RespondWithError(w, http.StatusBadRequest, "name is required")
 		return
 	}
 

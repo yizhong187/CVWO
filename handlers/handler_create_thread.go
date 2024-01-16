@@ -41,10 +41,10 @@ func HandlerCreateThread(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get subforumID and userName (used to find userID) from the URL parameter
+	// Get subforumID and name (used to find userID) from the URL parameter
 	subforumID := chi.URLParam(r, "subforumID")
-	userName := chi.URLParam(r, "name")
-	userID, err := util.QueryUserID(userName)
+	name := chi.URLParam(r, "name")
+	userID, err := util.QueryUserID(name)
 	if err != nil {
 		if err.Error() == "User not found" {
 			util.RespondWithError(w, http.StatusNotFound, "User not found")
