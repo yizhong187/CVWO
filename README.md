@@ -5,6 +5,7 @@ This is a repo for CVWO's forum webapp backend
 ## API Overview
 Base URL: [does not exist]
 
+
 ## User Related Endpoints
 
 1. Sign up
@@ -89,7 +90,7 @@ Base URL: [does not exist]
      - 'threadID': unique identifier of thread
    - Response: Detailed information of the thread. 
 
-3. Post new thread [WORK IN PROGRESS (USER AUTHENTICATION)]
+3. Post new thread
    - Description: Post a new thread on a subforum. User has to be logged in.
    - Method: 'POST'
    - Endpoint: '/subforums/{subforumID}/threads'
@@ -100,7 +101,7 @@ Base URL: [does not exist]
      - 'content': content of new thread
    - Response: Confirmation of thread posted. 
 
-4. Update existing thread [WORK IN PROGRESS] 
+4. Update existing thread
    - Description: Update the details of an existing thread. Original thread creator has to be logged in.
    - Method: 'PUT'
    - Endpoint: '/subforums/{subforumID}/threads/{threadID}'
@@ -127,19 +128,19 @@ Base URL: [does not exist]
 
 ## Reply Related Endpoints
 
-1. List replies of a thread [WORK IN PROGRESS]
+1. List replies of a thread
    - Description: Retrieve a list of all replies in a specific thread.
    - Method: 'GET'
-   - Endpoint: '/subforums/{subforumID}/threads/{threadID}'
+   - Endpoint: '/subforums/{subforumID}/threads/{threadID}/replies'
    - URL Parameters: 
      - 'subforumID': unique identifier of the subforum.
      - 'threadID': unique identifier of thread
    - Response: A list of all replies in the thread.
 
-2. Post new reply [WORK IN PROGRESS]
+2. Post new reply
    - Description: Post a new reply in a thread. User has to be logged in.
    - Method: 'POST'
-   - Endpoint: '/subforums/{subforumID}/threads/{threadID}'
+   - Endpoint: '/subforums/{subforumID}/threads/{threadID}/replies'
    - URL Parameters: 
      - 'subforumID': unique identifier of the subforum.
      - 'threadID': unique identifier of thread
@@ -150,7 +151,7 @@ Base URL: [does not exist]
 3. Update existing reply [WORK IN PROGRESS] 
    - Description: Update the details of an existing reply. Original replier has to be logged in.
    - Method: 'PUT'
-   - Endpoint: '/subforums/{subforumID}/threads/{threadID}/reply/{replyID}'
+   - Endpoint: '/subforums/{subforumID}/threads/{threadID}/replies/{replyID}'
    - URL Parameters: 
      - 'subforumID': unique identifier of subforum
      - 'threadID': unique identifier of thread
@@ -162,7 +163,7 @@ Base URL: [does not exist]
 4. Delete existing reply [WORK IN PROGRESS]
    - Description: Delete an existing reply. Original replier has to be logged in.
    - Method: 'DELETE'
-   - Endpoint: '/subforums/{subforumID}/threads/{threadID}/reply/{replyID}'
+   - Endpoint: '/subforums/{subforumID}/threads/{threadID}/replies/{replyID}'
    - URL Parameters: 
      - 'subforumID': unique identifier of subforum
      - 'threadID': unique identifier of thread
@@ -172,7 +173,7 @@ Base URL: [does not exist]
 
 ## SUPERUSER Related Endpoints: 
 
-1. Create subforum
+1. Create subforum [WORK IN PROGRESS]
    - Description: Create new subforum. User must be SUPERUSER.
    - Method: 'POST'
    - Endpoint: '/subforum'
