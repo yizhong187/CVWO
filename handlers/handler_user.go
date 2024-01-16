@@ -21,44 +21,17 @@ func HandlerUser(w http.ResponseWriter, r *http.Request) {
 	if usersTable == "" {
 		log.Fatal("usersTable is not set in the environment")
 	}
-	secretKey := os.Getenv("SECRET_KEY")
-	if usersTable == "" {
-		log.Fatal("SECRET_KEY is not set in the environment")
-	}
 
-	cookie, err := r.Cookie("jwt")
-	if err != nil {
-		util.RespondWithError(w, http.StatusUnauthorized, "User unauthenticated")
-		return
-	}
-
-	token, err := jwt.ParseWithClaims(cookie.Value, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(secretKey), nil
-	})
-
-	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			util.RespondWithError(w, http.StatusUnauthorized, "User unauthenticated")
-			return
-		}
-		util.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Bad request: \n%v", err))
-		return
-	}
-
-	if !token.Valid {
-		util.RespondWithError(w, http.StatusUnauthorized, "User unauthenticated")
-		return
-	}
-
-	claims, ok := token.Claims.(*jwt.RegisteredClaims)
+	// Retrieve the claims from the middleware context (util.AuthenticateUserMiddleware)
+	claims, ok := r.Context().Value("userClaims").(*jwt.RegisteredClaims)
 	if !ok {
-		util.RespondWithError(w, http.StatusUnauthorized, "User unauthenticated")
+		util.RespondWithError(w, http.StatusInternalServerError, "Error processing user data")
 		return
 	}
 
 	var user models.TestingUser
 	query := fmt.Sprintf("SELECT id, name, type, created_at FROM %s WHERE id = $1", usersTable)
-	err = database.GetDB().QueryRow(query, claims.Subject).Scan(&user.ID, &user.Name, &user.Type, &user.CreatedAt)
+	err := database.GetDB().QueryRow(query, claims.Subject).Scan(&user.ID, &user.Name, &user.Type, &user.CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			util.RespondWithError(w, http.StatusBadRequest, "User not found")
