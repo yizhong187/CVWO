@@ -1,5 +1,5 @@
 # CVWO
-This is a repo for CVWO
+This is a repo for CVWO's forum webapp backend 
 
 
 ## API Overview
@@ -137,7 +137,7 @@ Base URL: [does not exist]
    - Response: A list of all replies in the thread.
 
 2. Post new reply [WORK IN PROGRESS]
-  - Description: Post a new reply in a thread. User has to be logged in.
+   - Description: Post a new reply in a thread. User has to be logged in.
    - Method: 'POST'
    - Endpoint: '/subforums/{subforumID}/threads/{threadID}'
    - URL Parameters: 
