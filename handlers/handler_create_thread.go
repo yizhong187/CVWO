@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 	"github.com/yizhong187/CVWO/database"
 	"github.com/yizhong187/CVWO/util"
@@ -22,6 +23,13 @@ func HandlerCreateThread(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Retrieve the claims from the middleware context (util.AuthenticateUserMiddleware)
+	claims, ok := r.Context().Value("userClaims").(*jwt.RegisteredClaims)
+	if !ok {
+		util.RespondWithError(w, http.StatusInternalServerError, "Error processing user data")
+		return
+	}
+
 	// Decode the JSON request body into CreateThreadRequest struct
 	type CreateThreadRequestData struct {
 		Title   string `json:"title"`
@@ -30,7 +38,7 @@ func HandlerCreateThread(w http.ResponseWriter, r *http.Request) {
 	var requestData CreateThreadRequestData
 	err := json.NewDecoder(r.Body).Decode(&requestData)
 	if err != nil {
-		util.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		util.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid request payload: \n%v", err))
 		return
 	}
 	defer r.Body.Close()
@@ -41,22 +49,12 @@ func HandlerCreateThread(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get subforumID and name (used to find userID) from the URL parameter
+	// Get subforumID from the URL parameter
 	subforumID := chi.URLParam(r, "subforumID")
-	name := chi.URLParam(r, "name")
-	userID, err := util.QueryUserID(name)
-	if err != nil {
-		if err.Error() == "User not found" {
-			util.RespondWithError(w, http.StatusNotFound, "User not found")
-		} else {
-			util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: \n%v", err))
-		}
-		return
-	}
 
 	// Insert the new thread into the database
 	query := fmt.Sprintf("INSERT INTO %s (subforum_id, title, content, created_by, is_pinned, updated_at) VALUES ($1, $2, $3, $4, $5, NOW())", threadsTable)
-	_, err = database.GetDB().Exec(query, subforumID, requestData.Title, requestData.Content, userID, false)
+	_, err = database.GetDB().Exec(query, subforumID, requestData.Title, requestData.Content, claims.Subject, false)
 	if err != nil {
 		util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: \n%v", err))
 		return
