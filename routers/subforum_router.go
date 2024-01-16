@@ -13,9 +13,11 @@ func SubforumRouter() *chi.Mux {
 	//r.Use(middleware.Recoverer)
 
 	// Subforum-related endpoints for creating, retrieving, updating, and deleting subforums
-	r.Post("/", handlers.HandlerCreateSubforum)
 	r.Get("/", handlers.HandlerAllSubforums)
 	r.Get("/{subforumID}", handlers.HandlerSubforum)
+
+	// SUPERUSER-ONLY endpoints
+	r.Post("/", handlers.HandlerCreateSubforum)
 	r.Put("/{subforumID}", handlers.HandlerUpdateSubforum)
 	// r.Delete("/{subforumID}", handlers.HandlerDeleteSubforum)
 
