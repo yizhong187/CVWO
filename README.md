@@ -1,6 +1,7 @@
 # CVWO
 This is a repo for CVWO
 
+
 ## API Overview
 Base URL: [does not exist]
 
@@ -85,11 +86,11 @@ Base URL: [does not exist]
    - Endpoint: '/subforums/{subforumID}/threads/{threadID}'
    - URL Parameters: 
      - 'subforumID': unique identifier of the subforum.
-     - - 'threadID': unique identifier of thread
+     - 'threadID': unique identifier of thread
    - Response: Detailed information of the thread.
 
-2. Post new thread [WORK IN PROGRESS (USER AUTHENTICATION)]
-  - Description: Post a new thread on a subforum. User has to be logged in.
+3. Post new thread [WORK IN PROGRESS (USER AUTHENTICATION)]
+   - Description: Post a new thread on a subforum. User has to be logged in.
    - Method: 'POST'
    - Endpoint: '/subforums/{subforumID}/threads'
    - URL Parameters: 
@@ -99,7 +100,7 @@ Base URL: [does not exist]
      - 'content': content of new thread
    - Response: Confirmation of thread posted.
 
-3. Update existing thread [WORK IN PROGRESS] 
+4. Update existing thread [WORK IN PROGRESS] 
    - Description: Update the details of an existing thread. Original thread creator has to be logged in.
    - Method: 'PUT'
    - Endpoint: '/subforums/{subforumID}/threads/{threadID}'
@@ -111,7 +112,7 @@ Base URL: [does not exist]
      - 'content': new content of thread
    - Response: Confirmation of thread update.
 
-4. Delete existing thread [WORK IN PROGRESS]
+5. Delete existing thread [WORK IN PROGRESS]
    - Description: Delete an existing thread. Original thread creator has to be logged in.
    - Method: 'DELETE'
    - Endpoint: '/subforums/{subforumID}/threads/{threadID}'
