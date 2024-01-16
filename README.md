@@ -1,10 +1,10 @@
 # CVWO
 This is a repo for CVWO
 
-API Overview
+## API Overview
 Base URL: [does not exist]
 
-User Related Endpoints
+## User Related Endpoints
 
 1. Sign up
    - Description: For registration of new users.
@@ -52,7 +52,7 @@ User Related Endpoints
    - Response: A list of all users.
 
 
-Subforum Related Endpoints
+## Subforum Related Endpoints
 
 1. List subforums
    - Description: Retrieve a list of all subforums.
@@ -69,7 +69,7 @@ Subforum Related Endpoints
    - Response: Detailed information of the subforum.
 
 
-Thread Related Endpoints
+## Thread Related Endpoints
 
 1. List threads of a subforum
    - Description: Retrieve a list of all threads in a specific subforum.
@@ -124,7 +124,7 @@ Thread Related Endpoints
    - Response: Confirmation of thread deletion.
 
 
-Reply Related Endpoints
+## Reply Related Endpoints
 
 1. List replies of a thread [WORK IN PROGRESS]
    - Description: Retrieve a list of all replies in a specific thread.
@@ -169,7 +169,7 @@ Reply Related Endpoints
    - Response: Confirmation of reply deletion.
 
 
-SUPERUSER Related Endpoints: 
+## SUPERUSER Related Endpoints: 
 
 1. Create subforum
    - Description: Create new subforum. User must be SUPERUSER.
@@ -181,7 +181,6 @@ SUPERUSER Related Endpoints:
      - 'photoURL': link to cover photo of new subforum
    - Response: Confirmation of subforum creation.
 
-2. 
 
 
 
