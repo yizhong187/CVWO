@@ -11,6 +11,7 @@ import (
 	"github.com/yizhong187/CVWO/database"
 	"github.com/yizhong187/CVWO/handlers"
 	"github.com/yizhong187/CVWO/routers"
+	"github.com/yizhong187/CVWO/util"
 )
 
 func main() {
@@ -43,13 +44,12 @@ func main() {
 	v2Router.Post("/signup", handlers.HandlerSignup)
 	v2Router.Post("/login", handlers.HandlerLogin)
 	v2Router.Get("/logout", handlers.HandlerLogout)
-	v2Router.Get("/user", handlers.HandlerUser)
+
+	v2Router.With(util.AuthenticateUserMiddleware).Get("/user", handlers.HandlerUser)
+
 	v2Router.Get("/users", handlers.HandlerAllUsers)
 
-	v2Router.Mount("/users", routers.UserRouter())
 	v2Router.Mount("/subforums", routers.SubforumRouter())
-	v2Router.Get("/healthz", handlers.HandlerReadiness)
-	v2Router.Get("/err", handlers.HandlerErr)
 
 	// Mount v2Router under /v2 prefix
 	router.Mount("/v2", v2Router)
