@@ -80,14 +80,14 @@ Base URL: [does not exist]
      - 'subforumID': unique identifier of the subforum.
    - Response: A list of all threads in the subforum.
 
-2. Review thread [WORK IN PROGRESS]
+2. Review thread 
    - Description: Review one thread.
    - Method: 'GET'
    - Endpoint: '/subforums/{subforumID}/threads/{threadID}'
    - URL Parameters: 
      - 'subforumID': unique identifier of the subforum.
      - 'threadID': unique identifier of thread
-   - Response: Detailed information of the thread.
+   - Response: Detailed information of the thread. 
 
 3. Post new thread [WORK IN PROGRESS (USER AUTHENTICATION)]
    - Description: Post a new thread on a subforum. User has to be logged in.
@@ -98,7 +98,7 @@ Base URL: [does not exist]
    - Request Body: 
      - 'title': title of new thread
      - 'content': content of new thread
-   - Response: Confirmation of thread posted.
+   - Response: Confirmation of thread posted. 
 
 4. Update existing thread [WORK IN PROGRESS] 
    - Description: Update the details of an existing thread. Original thread creator has to be logged in.
