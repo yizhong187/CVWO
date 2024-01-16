@@ -43,7 +43,8 @@ func main() {
 	v2Router.Post("/signup", handlers.HandlerSignup)
 	v2Router.Post("/login", handlers.HandlerLogin)
 	v2Router.Get("/logout", handlers.HandlerLogout)
-	v2Router.Get("/user", handlers.HandlerTesting)
+	v2Router.Get("/user", handlers.HandlerUser)
+	v2Router.Get("/users", handlers.HandlerAllUsers)
 
 	v2Router.Mount("/users", routers.UserRouter())
 	v2Router.Get("/healthz", handlers.HandlerReadiness)
