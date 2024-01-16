@@ -16,5 +16,7 @@ func ThreadRouter() *chi.Mux {
 	//r.Delete("/{threadID}", handlers.HandlerDeleteThread) // Endpoint for deleting a specific thread
 
 	r.Post("/{threadID}", handlers.HandlerPostReply) // Endpoint for posting a new reply in a thread
+	//r.Put("/{threadID}/", handlers.HandlerUpdateThread) // Endpoint for updating a specific thread
+	//r.Delete("/{threadID}", handlers.HandlerDeleteThread) // Endpoint for deleting a specific thread
 	return r
 }
