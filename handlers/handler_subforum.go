@@ -33,7 +33,7 @@ func HandlerSubforum(w http.ResponseWriter, r *http.Request) {
 
 	// Query the database for the subforum
 	query := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", subforumTable)
-	err := database.GetDB().QueryRow(query, subforumID).Scan(&subforum.ID, &subforum.Name, &subforum.Description, &subforum.CreatedBy, &subforum.CreatedAt, &subforum.UpdatedAt, &subforum.PhotoUrl)
+	err := database.GetDB().QueryRow(query, subforumID).Scan(&subforum.ID, &subforum.Name, &subforum.Description, &subforum.CreatedAt, &subforum.UpdatedAt, &subforum.PhotoUrl)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			util.RespondWithError(w, http.StatusNotFound, "Subforum not found")

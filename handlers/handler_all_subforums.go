@@ -30,7 +30,7 @@ func HandlerAllSubforums(w http.ResponseWriter, r *http.Request) {
 	var subforums []models.Subforum
 	for rows.Next() {
 		var subforum models.Subforum
-		err := rows.Scan(&subforum.ID, &subforum.Name, &subforum.Description, &subforum.CreatedBy, &subforum.CreatedAt, &subforum.UpdatedAt, &subforum.PhotoUrl)
+		err := rows.Scan(&subforum.ID, &subforum.Name, &subforum.Description, &subforum.CreatedAt, &subforum.UpdatedAt, &subforum.PhotoUrl)
 		if err != nil {
 			util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error scanning row: \n%v", err))
 			return
