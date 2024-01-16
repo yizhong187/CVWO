@@ -1,5 +1,5 @@
 # CVWO
-This is a repo for CVWO's forum webapp backend 
+This is a repo for CVWO's forum webapp backend.
 
 
 ## API Overview
