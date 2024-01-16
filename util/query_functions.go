@@ -11,7 +11,7 @@ import (
 	"github.com/yizhong187/CVWO/models"
 )
 
-func QueryUser(userName string) (models.User, error) {
+func QueryUser(username string) (models.User, error) {
 	godotenv.Load(".env")
 	usersTable := os.Getenv("DB_USERS_TABLE")
 	if usersTable == "" {
@@ -20,7 +20,7 @@ func QueryUser(userName string) (models.User, error) {
 
 	var user models.User
 	query := fmt.Sprintf("SELECT id, name, type, created_at FROM %s WHERE name = $1", usersTable)
-	err := database.GetDB().QueryRow(query, userName).Scan(&user.ID, &user.Name, &user.Type, &user.CreatedAt)
+	err := database.GetDB().QueryRow(query, username).Scan(&user.ID, &user.Name, &user.Type, &user.CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return models.User{}, errors.New("User not found! ")
@@ -32,7 +32,7 @@ func QueryUser(userName string) (models.User, error) {
 	return user, nil
 }
 
-func QueryUserType(userName string) (string, error) {
+func QueryUserType(username string) (string, error) {
 	godotenv.Load(".env")
 	usersTable := os.Getenv("DB_USERS_TABLE")
 	if usersTable == "" {
@@ -41,7 +41,7 @@ func QueryUserType(userName string) (string, error) {
 
 	var userType string
 	query := fmt.Sprintf("SELECT type FROM %s WHERE name = $1", usersTable)
-	err := database.GetDB().QueryRow(query, userName).Scan(&userType)
+	err := database.GetDB().QueryRow(query, username).Scan(&userType)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return "", errors.New("User not found")
@@ -53,7 +53,7 @@ func QueryUserType(userName string) (string, error) {
 	return userType, nil
 }
 
-func QueryUserID(userName string) (string, error) {
+func QueryUserID(username string) (string, error) {
 	godotenv.Load(".env")
 	usersTable := os.Getenv("DB_USERS_TABLE")
 	if usersTable == "" {
@@ -62,7 +62,7 @@ func QueryUserID(userName string) (string, error) {
 
 	var userID string
 	query := fmt.Sprintf("SELECT id FROM %s WHERE name = $1", usersTable)
-	err := database.GetDB().QueryRow(query, userName).Scan(&userID)
+	err := database.GetDB().QueryRow(query, username).Scan(&userID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return "", errors.New("User not found")
@@ -74,9 +74,9 @@ func QueryUserID(userName string) (string, error) {
 	return userID, nil
 }
 
-func IsAdminOf(userName string, subforumID string) (bool, error) {
+func IsAdminOf(username string, subforumID string) (bool, error) {
 	// Use QueryUser to find the user with the username
-	user, err := QueryUser(userName)
+	user, err := QueryUser(username)
 	if err != nil {
 		return false, err
 	}
@@ -152,13 +152,13 @@ func QueryReplyCount(threadID int) (int, error) {
 
 func QueryUsernameTaken(username string) (bool, error) {
 	godotenv.Load(".env")
-	usersTable := os.Getenv("DB_TESTING_USERS_TABLE")
+	usersTable := os.Getenv("DB_USERS_TABLE")
 	if usersTable == "" {
-		return false, errors.New("DB_TESTING_USERS_TABLE is not set in the environment")
+		return false, errors.New("DB_USERS_TABLE is not set in the environment")
 	}
 
 	var taken bool
-	query := fmt.Sprintf("SELECT EXISTS(SELECT 1 FROM %s WHERE username = $1)", usersTable)
+	query := fmt.Sprintf("SELECT EXISTS(SELECT 1 FROM %s WHERE name = $1)", usersTable)
 	err := database.GetDB().QueryRow(query, username).Scan(&taken)
 	if err != nil {
 		return false, fmt.Errorf("Error checking username taken: %v", err)
