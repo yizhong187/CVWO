@@ -47,6 +47,7 @@ func main() {
 	v2Router.Get("/users", handlers.HandlerAllUsers)
 
 	v2Router.Mount("/users", routers.UserRouter())
+	v2Router.Mount("/subforums", routers.SubforumRouter())
 	v2Router.Get("/healthz", handlers.HandlerReadiness)
 	v2Router.Get("/err", handlers.HandlerErr)
 
