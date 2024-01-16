@@ -12,7 +12,7 @@ import (
 	"github.com/yizhong187/CVWO/util"
 )
 
-func HandlerRegister(w http.ResponseWriter, r *http.Request) {
+func HandlerSignup(w http.ResponseWriter, r *http.Request) {
 
 	godotenv.Load(".env")
 	usersTable := os.Getenv("DB_TESTING_USERS_TABLE")
