@@ -32,7 +32,7 @@ Base URL: [does not exist]
    - Endpoint: '/user'
    - Response: Detailed information of user.
 
-4. Update user [WORK IN PROGRESS]
+4. Update user
    - Description: Update the details of the existing logged in user.
    - Method: 'PUT'
    - Endpoint: '/user'
@@ -113,16 +113,13 @@ Base URL: [does not exist]
      - 'content': new content of thread
    - Response: Confirmation of thread update.
 
-5. Delete existing thread [WORK IN PROGRESS]
-   - Description: Delete an existing thread. Original thread creator has to be logged in.
+5. Delete existing thread
+   - Description: Delete an existing thread and all replies under it. Original thread creator has to be logged in.
    - Method: 'DELETE'
    - Endpoint: '/subforums/{subforumID}/threads/{threadID}'
    - URL Parameters: 
      - 'subforumID': unique identifier of subforum
      - 'threadID': unique identifier of thread
-   - Request Body: 
-     - 'title': new title of thread
-     - 'content': new content of thread
    - Response: Confirmation of thread deletion.
 
 
@@ -148,7 +145,7 @@ Base URL: [does not exist]
      - 'content': content of new reply
    - Response: Confirmation of reply posted.
 
-3. Update existing reply [WORK IN PROGRESS] 
+3. Update existing reply
    - Description: Update the details of an existing reply. Original replier has to be logged in.
    - Method: 'PUT'
    - Endpoint: '/subforums/{subforumID}/threads/{threadID}/replies/{replyID}'
@@ -160,7 +157,7 @@ Base URL: [does not exist]
      - 'content': new content of reply
    - Response: Confirmation of reply update.
 
-4. Delete existing reply [WORK IN PROGRESS]
+4. Delete existing reply
    - Description: Delete an existing reply. Original replier has to be logged in.
    - Method: 'DELETE'
    - Endpoint: '/subforums/{subforumID}/threads/{threadID}/replies/{replyID}'
@@ -181,6 +178,18 @@ Base URL: [does not exist]
      - 'name': name of new subforum
      - 'description': description of new subforum
      - 'photoURL': link to cover photo of new subforum
+   - Response: Confirmation of subforum creation.
+
+2. Update existing subforum [WORK IN PROGRESS]
+   - Description: Update the details of an existing subforum. User must be SUPERUSER.
+   - Method: 'PUT'
+   - Endpoint: '/subforum/{subforumID}'
+   - URL Parameters: 
+     - 'subforumID': unique identifier of subforum
+   - Request Body: 
+     - 'name': new name of subforum
+     - 'description': new description of subforum
+     - 'photoURL': new link to cover photo of subforum
    - Response: Confirmation of subforum creation.
 
 
