@@ -46,6 +46,7 @@ func main() {
 	v2Router.Get("/logout", handlers.HandlerLogout)
 
 	v2Router.With(util.AuthenticateUserMiddleware).Get("/user", handlers.HandlerUser)
+	v2Router.With(util.AuthenticateUserMiddleware).Put("/user", handlers.HandlerUpdateUser)
 
 	v2Router.Get("/users", handlers.HandlerAllUsers)
 
