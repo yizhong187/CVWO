@@ -13,6 +13,7 @@ import (
 	"github.com/yizhong187/CVWO/util"
 )
 
+// HandlerUpdateSubforum handles the request to update a specific existing subforum.
 func HandlerUpdateSubforum(w http.ResponseWriter, r *http.Request) {
 
 	godotenv.Load(".env")

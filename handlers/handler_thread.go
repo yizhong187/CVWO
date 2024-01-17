@@ -14,6 +14,7 @@ import (
 	"github.com/yizhong187/CVWO/util"
 )
 
+// HandlerThread handles the request to retrieve a specific existing thread.
 func HandlerThread(w http.ResponseWriter, r *http.Request) {
 	godotenv.Load(".env")
 	threadsTable := os.Getenv("DB_THREADS_TABLE")
@@ -21,7 +22,7 @@ func HandlerThread(w http.ResponseWriter, r *http.Request) {
 	// Retrieve threadID from URL parameter
 	threadID := chi.URLParam(r, "threadID")
 
-	// First SQL query to get the thread
+	// SQL query to get the thread
 	threadQuery := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", threadsTable)
 	row := database.GetDB().QueryRow(threadQuery, threadID)
 	var thread models.Thread
@@ -31,13 +32,12 @@ func HandlerThread(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Second SQL query to get replyCount for the thread
+	// Used util.QueryReplyCount to get replyCount of the thread
 	numThreadID, err := strconv.Atoi(threadID)
 	if err != nil {
 		util.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid Parameter: \n%v", err))
 		return
 	}
-
 	replyCount, err := util.QueryReplyCount(numThreadID)
 	if err != nil {
 		util.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error retrieving replycount: \n%v", err))

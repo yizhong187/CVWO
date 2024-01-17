@@ -13,6 +13,7 @@ import (
 	"github.com/yizhong187/CVWO/util"
 )
 
+// HandlerUpdateThread handles the request to update a specific existing thread.
 func HandlerUpdateThread(w http.ResponseWriter, r *http.Request) {
 
 	godotenv.Load(".env")

@@ -7,7 +7,9 @@ import (
 	"github.com/yizhong187/CVWO/util"
 )
 
+// HandlerLogout handles the request to logout of the current session. An expired cookie will be returned.
 func HandlerLogout(w http.ResponseWriter, r *http.Request) {
+
 	// Set the token in an HTTP-only cookie
 	http.SetCookie(w, &http.Cookie{
 		Name:     "jwt",

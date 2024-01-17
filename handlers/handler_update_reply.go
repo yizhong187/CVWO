@@ -13,6 +13,7 @@ import (
 	"github.com/yizhong187/CVWO/util"
 )
 
+// // HandlerUpdateReply handles the request to update a specific existing reply.
 func HandlerUpdateReply(w http.ResponseWriter, r *http.Request) {
 	godotenv.Load(".env")
 	repliesTable := os.Getenv("DB_REPLIES_TABLE")

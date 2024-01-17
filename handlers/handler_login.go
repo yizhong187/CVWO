@@ -15,6 +15,7 @@ import (
 	"github.com/yizhong187/CVWO/util"
 )
 
+// HandlerLogin handles the request to login to an existing user. A cookie containing the JWT will be returned.
 func HandlerLogin(w http.ResponseWriter, r *http.Request) {
 
 	godotenv.Load(".env")
@@ -64,6 +65,7 @@ func HandlerLogin(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Check if the password matches the hashed password in the database
 	if !util.CheckPasswordHash(requestData.Password, passwordHash) {
 		util.RespondWithError(w, http.StatusBadRequest, "Wrong password")
 		return

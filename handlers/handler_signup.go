@@ -12,6 +12,7 @@ import (
 	"github.com/yizhong187/CVWO/util"
 )
 
+// HandlerSignup handles the request to sign up.
 func HandlerSignup(w http.ResponseWriter, r *http.Request) {
 
 	godotenv.Load(".env")
@@ -41,6 +42,7 @@ func HandlerSignup(w http.ResponseWriter, r *http.Request) {
 		util.RespondWithError(w, http.StatusBadRequest, "Password is required")
 	}
 
+	// Check if name is taken
 	taken, err := util.QueryUsernameTaken(requestData.Name)
 	if err != nil {
 		util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: \n%v", err))
@@ -51,9 +53,10 @@ func HandlerSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Hash password using util.HashPassword
 	hash, err := util.HashPassword(requestData.Password)
 
-	// // Construct and execute SQL query to insert new user
+	// Construct and execute SQL query to insert new user
 	query := fmt.Sprintf("INSERT INTO %s (name, type, password_hash) VALUES ($1, $2, $3)", usersTable)
 	_, err = database.GetDB().Exec(query, requestData.Name, "normal", hash)
 	if err != nil {
