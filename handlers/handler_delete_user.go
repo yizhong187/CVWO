@@ -1,3 +1,5 @@
+//[DEPRECATED]
+
 package handlers
 
 import (
@@ -12,6 +14,7 @@ import (
 	"github.com/yizhong187/CVWO/util"
 )
 
+// HandlerDeleteReply handles the request to delete an existing reply.
 func HandlerDeleteUser(w http.ResponseWriter, r *http.Request) {
 	godotenv.Load(".env")
 	usersTable := os.Getenv("DB_USERS_TABLE")

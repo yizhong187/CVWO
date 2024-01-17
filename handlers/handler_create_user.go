@@ -1,3 +1,5 @@
+//[DEPRECATED]
+
 package handlers
 
 import (
@@ -13,6 +15,7 @@ import (
 	"github.com/yizhong187/CVWO/util"
 )
 
+// HandlerCreateReply handles the request to create a new user.
 func HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 
 	godotenv.Load(".env")

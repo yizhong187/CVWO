@@ -1,3 +1,5 @@
+//[DEPRECATED]
+
 package handlers
 
 import (
