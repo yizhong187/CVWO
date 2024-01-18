@@ -17,11 +17,20 @@ func HandlerAllReplies(w http.ResponseWriter, r *http.Request) {
 
 	godotenv.Load(".env")
 	repliesTable := os.Getenv("DB_REPLIES_TABLE")
-	query := fmt.Sprintf("SELECT * FROM %s WHERE thread_id = $1", repliesTable)
+	usersTable := os.Getenv("DB_USERS_TABLE") // Assuming you have this environment variable
+
+	// Modify the query to join with users table to get createdByName
+	query := fmt.Sprintf(`
+        SELECT r.id, r.thread_id, r.content, r.created_by, u.name AS created_by_name, r.created_at, r.updated_at
+        FROM %s r
+        INNER JOIN %s u ON r.created_by = u.id
+        WHERE r.thread_id = $1
+				ORDER BY r.id DESC
+    `, repliesTable, usersTable)
 
 	threadID := chi.URLParam(r, "threadID")
 
-	// Execute sql query and return a rows result set
+	// Execute SQL query and return a rows result set
 	rows, err := database.GetDB().Query(query, threadID)
 	if err != nil {
 		util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: \n%v", err))
@@ -29,11 +38,11 @@ func HandlerAllReplies(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	// Initialize a slice of threads, scan each row into a thread struct and append into the slice
+	// Initialize a slice of replies, scan each row into a reply struct, and append it to the slice
 	var replies []models.Reply
 	for rows.Next() {
 		var reply models.Reply
-		err := rows.Scan(&reply.ID, &reply.ThreadID, &reply.Content, &reply.CreatedBy, &reply.CreatedAt, &reply.UpdatedAt)
+		err := rows.Scan(&reply.ID, &reply.ThreadID, &reply.Content, &reply.CreatedBy, &reply.CreatedByName, &reply.CreatedAt, &reply.UpdatedAt)
 		if err != nil {
 			util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error scanning row: \n%v", err))
 			return
@@ -46,6 +55,6 @@ func HandlerAllReplies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Respond with the list of threads in JSON format
+	// Respond with the list of replies in JSON format
 	util.RespondWithJSON(w, http.StatusOK, replies)
 }
