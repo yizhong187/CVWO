@@ -12,6 +12,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 	"github.com/yizhong187/CVWO/database"
+	"github.com/yizhong187/CVWO/models"
 	"github.com/yizhong187/CVWO/util"
 )
 
@@ -51,10 +52,9 @@ func HandlerLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Construct and execute SQL query to retrieve passwordHash
-	var passwordHash string
-	var userID string
-	query := fmt.Sprintf("SELECT password_hash, id FROM %s WHERE name = $1;	", usersTable)
-	err = database.GetDB().QueryRow(query, requestData.Name).Scan(&passwordHash, &userID)
+	var user models.User
+	query := fmt.Sprintf("SELECT * FROM %s WHERE name = $1;	", usersTable)
+	err = database.GetDB().QueryRow(query, requestData.Name).Scan(&user.ID, &user.Name, &user.Type, &user.CreatedAt, &user.PasswordHash)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			util.RespondWithError(w, http.StatusBadRequest, "User not found")
@@ -66,7 +66,7 @@ func HandlerLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if the password matches the hashed password in the database
-	if !util.CheckPasswordHash(requestData.Password, passwordHash) {
+	if !util.CheckPasswordHash(requestData.Password, user.PasswordHash) {
 		util.RespondWithError(w, http.StatusBadRequest, "Wrong password")
 		return
 	}
@@ -74,7 +74,7 @@ func HandlerLogin(w http.ResponseWriter, r *http.Request) {
 	// Define the standard claims
 	claims := &jwt.RegisteredClaims{
 		Issuer:    "github.com/yizhong187/CVWO",
-		Subject:   userID,
+		Subject:   user.ID,
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)), // 1 day
 	}
 
@@ -98,6 +98,6 @@ func HandlerLogin(w http.ResponseWriter, r *http.Request) {
 		Path:     "/", // Make sure the cookie is sent with every request to the server
 	})
 
-	util.RespondWithJSON(w, http.StatusOK, "Successfully logged in")
+	util.RespondWithJSON(w, http.StatusOK, user)
 
 }

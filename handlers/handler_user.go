@@ -29,7 +29,7 @@ func HandlerUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var user models.TestingUser
+	var user models.User
 	query := fmt.Sprintf("SELECT id, name, type, created_at FROM %s WHERE id = $1", usersTable)
 	err := database.GetDB().QueryRow(query, claims.Subject).Scan(&user.ID, &user.Name, &user.Type, &user.CreatedAt)
 	if err != nil {
