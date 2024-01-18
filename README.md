@@ -24,13 +24,13 @@ Base URL: [does not exist]
    - Request Body: 
      - 'name': name
      - 'password': password
-   - Response: Confirmation of login, with JWT.
+   - Response: User information, with JWT.
 
 3. Review user
    - Decription: Review the existing logged in user details.
    - Method: 'GET'
    - Endpoint: '/user'
-   - Response: Detailed information of user.
+   - Response: User information.
 
 4. Update user
    - Description: Update the details of the existing logged in user.

@@ -10,8 +10,8 @@ func ThreadRouter() *chi.Mux {
 	r := chi.NewRouter()
 
 	// Thread-related endpoints
-	r.Get("/", handlers.HandlerAllThreads)      // Endpoint for retrieving all replies in a thread
-	r.Get("/{replyID}", handlers.HandlerThread) // Endpoint for retrieving a specific thread, and its replies
+	r.Get("/", handlers.HandlerAllThreads)       // Endpoint for retrieving all replies in a thread
+	r.Get("/{threadID}", handlers.HandlerThread) // Endpoint for retrieving a specific thread
 
 	r.With(util.AuthenticateUserMiddleware).Post("/", handlers.HandlerCreateThread)             // Endpoint for creating a new thread
 	r.With(util.AuthenticateUserMiddleware).Put("/{threadID}", handlers.HandlerUpdateThread)    // Endpoint for updating a specific thread

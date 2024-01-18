@@ -40,6 +40,7 @@ func HandlerSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	} else if requestData.Password == "" {
 		util.RespondWithError(w, http.StatusBadRequest, "Password is required")
+		return
 	}
 
 	// Check if name is taken
