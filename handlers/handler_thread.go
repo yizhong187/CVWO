@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strconv"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
@@ -18,53 +16,31 @@ import (
 func HandlerThread(w http.ResponseWriter, r *http.Request) {
 	godotenv.Load(".env")
 	threadsTable := os.Getenv("DB_THREADS_TABLE")
+	usersTable := os.Getenv("DB_USERS_TABLE")     // Assuming you have this environment variable
+	repliesTable := os.Getenv("DB_REPLIES_TABLE") // Assuming you have this environment variable
 
 	// Retrieve threadID from URL parameter
 	threadID := chi.URLParam(r, "threadID")
 
-	// SQL query to get the thread
-	threadQuery := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", threadsTable)
+	// SQL query to get the thread with join to fetch username and reply count
+	threadQuery := fmt.Sprintf(`
+        SELECT t.id, t.subforum_id, t.title, t.content, t.created_by, u.name AS created_by_name, t.is_pinned, t.created_at, t.updated_at, COUNT(r.id) AS reply_count
+        FROM %s t
+        INNER JOIN %s u ON t.created_by = u.id
+        LEFT JOIN %s r ON t.id = r.thread_id
+        WHERE t.id = $1
+        GROUP BY t.id, u.name
+    `, threadsTable, usersTable, repliesTable)
+
 	row := database.GetDB().QueryRow(threadQuery, threadID)
+
 	var thread models.Thread
-	err := row.Scan(&thread.ID, &thread.SubforumID, &thread.Title, &thread.Content, &thread.CreatedBy, &thread.IsPinned, &thread.CreatedAt, &thread.UpdatedAt)
+	err := row.Scan(&thread.ID, &thread.SubforumID, &thread.Title, &thread.Content, &thread.CreatedBy, &thread.CreatedByName, &thread.IsPinned, &thread.CreatedAt, &thread.UpdatedAt, &thread.ReplyCount)
 	if err != nil {
 		util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error retrieving thread: \n%v", err))
 		return
 	}
 
-	// Used util.QueryReplyCount to get replyCount of the thread
-	numThreadID, err := strconv.Atoi(threadID)
-	if err != nil {
-		util.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid Parameter: \n%v", err))
-		return
-	}
-	replyCount, err := util.QueryReplyCount(numThreadID)
-	if err != nil {
-		util.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error retrieving replycount: \n%v", err))
-		return
-	}
-
-	// Respond with thread and its replies using the RespondWithJSON function
-	response := struct {
-		ID         int       `json:"id"`
-		SubforumID int       `json:"subforumID"`
-		Title      string    `json:"title"`
-		Content    string    `json:"content"`
-		CreatedBy  string    `json:"createdBy"`
-		IsPinned   bool      `json:"isPinned"`
-		CreatedAt  time.Time `json:"createdAt"`
-		UpdatedAt  time.Time `json:"updatedAt"`
-		ReplyCount int       `json:"replyCount"`
-	}{
-		ID:         thread.ID,
-		SubforumID: thread.SubforumID,
-		Title:      thread.Title,
-		Content:    thread.Content,
-		CreatedBy:  thread.CreatedBy,
-		IsPinned:   thread.IsPinned,
-		CreatedAt:  thread.CreatedAt,
-		UpdatedAt:  thread.UpdatedAt,
-		ReplyCount: replyCount,
-	}
-	util.RespondWithJSON(w, http.StatusOK, response)
+	// Respond with the thread using the RespondWithJSON function
+	util.RespondWithJSON(w, http.StatusOK, thread)
 }

@@ -17,7 +17,18 @@ func HandlerAllThreads(w http.ResponseWriter, r *http.Request) {
 
 	godotenv.Load(".env")
 	threadsTable := os.Getenv("DB_THREADS_TABLE")
-	query := fmt.Sprintf("SELECT * FROM %s WHERE subforum_id = $1", threadsTable)
+	usersTable := os.Getenv("DB_USERS_TABLE")
+	repliesTable := os.Getenv("DB_REPLIES_TABLE")
+
+	query := fmt.Sprintf(`
+		SELECT t.id, t.subforum_id, t.title, t.content, t.created_by, u.name, t.is_pinned, t.created_at, t.updated_at, COUNT(r.id) AS reply_count
+		FROM %s t
+		INNER JOIN %s u ON t.created_by = u.id
+		LEFT JOIN %s r ON t.id = r.thread_id
+		WHERE t.subforum_id = $1
+		GROUP BY t.id, u.name
+		ORDER BY t.id DESC
+		`, threadsTable, usersTable, repliesTable)
 
 	subforumID := chi.URLParam(r, "subforumID")
 
@@ -33,7 +44,8 @@ func HandlerAllThreads(w http.ResponseWriter, r *http.Request) {
 	var threads []models.Thread
 	for rows.Next() {
 		var thread models.Thread
-		err := rows.Scan(&thread.ID, &thread.SubforumID, &thread.Title, &thread.Content, &thread.CreatedBy, &thread.IsPinned, &thread.CreatedAt, &thread.UpdatedAt)
+		err := rows.Scan(&thread.ID, &thread.SubforumID, &thread.Title, &thread.Content, &thread.CreatedBy,
+			&thread.CreatedByName, &thread.IsPinned, &thread.CreatedAt, &thread.UpdatedAt, &thread.ReplyCount)
 		if err != nil {
 			util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error scanning row: \n%v", err))
 			return
