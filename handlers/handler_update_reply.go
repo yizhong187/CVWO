@@ -45,8 +45,14 @@ func HandlerUpdateReply(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if the JWT Subject matches the original poster
-	if originalPoster != claims.Subject {
+	var userType string
+	userType, err = util.QueryUserType(claims.Subject)
+	if err != nil {
+		util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error querying user's type: \n%v", err))
+	}
+
+	// Check if the JWT Subject matches the original poster or is a SUPERUSER
+	if originalPoster != claims.Subject && userType != "super" {
 		util.RespondWithError(w, http.StatusUnauthorized, "User does not have authority to update this reply")
 		return
 	}
@@ -70,8 +76,8 @@ func HandlerUpdateReply(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update the existing reply in the database
-	query = fmt.Sprintf("UPDATE %s SET content = $2, updated_at = NOW() WHERE id = $1 AND created_by = $3", repliesTable)
-	_, err = database.GetDB().Exec(query, replyID, requestData.Content, claims.Subject)
+	query = fmt.Sprintf("UPDATE %s SET content = $2, updated_at = NOW() WHERE id = $1", repliesTable)
+	_, err = database.GetDB().Exec(query, replyID, requestData.Content)
 	if err != nil {
 		util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: \n%v", err))
 		return

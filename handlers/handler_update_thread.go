@@ -46,8 +46,14 @@ func HandlerUpdateThread(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if the JWT Subject matches the original poster
-	if originalPoster != claims.Subject {
+	var userType string
+	userType, err = util.QueryUserType(claims.Subject)
+	if err != nil {
+		util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error querying user's type: \n%v", err))
+	}
+
+	// Check if the JWT Subject matches the original poster or is a SUPERUSER
+	if originalPoster != claims.Subject && userType != "super" {
 		util.RespondWithError(w, http.StatusUnauthorized, "User does not have authority to update this thread")
 		return
 	}
@@ -72,8 +78,8 @@ func HandlerUpdateThread(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update the existing thread in the database
-	query = fmt.Sprintf("UPDATE %s SET title = $2, content = $3, updated_at = NOW() WHERE id = $1 AND created_by = $4", threadsTable)
-	_, err = database.GetDB().Exec(query, threadID, requestData.Title, requestData.Content, claims.Subject)
+	query = fmt.Sprintf("UPDATE %s SET title = $2, content = $3, updated_at = NOW() WHERE id = $1", threadsTable)
+	_, err = database.GetDB().Exec(query, threadID, requestData.Title, requestData.Content)
 	if err != nil {
 		util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: \n%v", err))
 		return

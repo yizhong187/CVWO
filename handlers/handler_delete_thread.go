@@ -44,8 +44,14 @@ func HandlerDeleteThread(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if the JWT Subject matches the original poster
-	if originalPoster != claims.Subject {
+	var userType string
+	userType, err = util.QueryUserType(claims.Subject)
+	if err != nil {
+		util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error querying user's type: \n%v", err))
+	}
+
+	// Check if the JWT Subject matches the original poster or is a SUPERUSER
+	if originalPoster != claims.Subject && userType != "super" {
 		util.RespondWithError(w, http.StatusUnauthorized, "User does not have authority to delete this thread")
 		return
 	}

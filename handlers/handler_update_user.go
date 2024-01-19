@@ -41,15 +41,28 @@ func HandlerUpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	// Hash password using util.HashPassword
-	hash, err := util.HashPassword(requestData.Password)
+	// Construct and execute SQL query to update the username if the name field is not left blank
+	if requestData.Name != "" {
+		updateQuery := fmt.Sprintf("UPDATE %s SET name = $1 WHERE id = $2", usersTable)
+		_, err := database.GetDB().Exec(updateQuery, requestData.Name, claims.Subject)
+		if err != nil {
+			util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error updating user: \n%v", err))
+			return
+		}
+	}
 
-	// Construct and execute SQL query to update the user
-	updateQuery := fmt.Sprintf("UPDATE %s SET name = $1, password_hash = $2 WHERE id = $3", usersTable)
-	_, err = database.GetDB().Exec(updateQuery, requestData.Name, hash, claims.Subject)
-	if err != nil {
-		util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error updating user: \n%v", err))
-		return
+	// Construct and execute SQL query to update the password if the password field is not left blank
+	if requestData.Password != "" {
+
+		// Hash password using util.HashPassword
+		hash, err := util.HashPassword(requestData.Password)
+
+		updateQuery := fmt.Sprintf("UPDATE %s SET password_hash = $1 WHERE id = $2", usersTable)
+		_, err = database.GetDB().Exec(updateQuery, hash, claims.Subject)
+		if err != nil {
+			util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error updating user: \n%v", err))
+			return
+		}
 	}
 
 	// Respond with a success message
