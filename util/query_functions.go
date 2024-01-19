@@ -32,7 +32,7 @@ func QueryUser(username string) (models.User, error) {
 	return user, nil
 }
 
-func QueryUserType(username string) (string, error) {
+func QueryUserType(id string) (string, error) {
 	godotenv.Load(".env")
 	usersTable := os.Getenv("DB_USERS_TABLE")
 	if usersTable == "" {
@@ -40,8 +40,8 @@ func QueryUserType(username string) (string, error) {
 	}
 
 	var userType string
-	query := fmt.Sprintf("SELECT type FROM %s WHERE name = $1", usersTable)
-	err := database.GetDB().QueryRow(query, username).Scan(&userType)
+	query := fmt.Sprintf("SELECT type FROM %s WHERE id = $1", usersTable)
+	err := database.GetDB().QueryRow(query, id).Scan(&userType)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return "", errors.New("User not found")
