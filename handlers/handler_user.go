@@ -29,6 +29,7 @@ func HandlerUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// SQL query to get the user
 	var user models.User
 	query := fmt.Sprintf("SELECT id, name, type, created_at FROM %s WHERE id = $1", usersTable)
 	err := database.GetDB().QueryRow(query, claims.Subject).Scan(&user.ID, &user.Name, &user.Type, &user.CreatedAt)
