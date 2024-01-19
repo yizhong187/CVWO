@@ -27,12 +27,18 @@ Base URL: [does not exist]
    - Response: User information, with JWT.
 
 3. Review user
-   - Decription: Review the existing logged in user details.
+   - Decription: Review the details of the existing logged in user.
    - Method: 'GET'
    - Endpoint: '/user'
    - Response: User information.
 
-4. Update user
+4. Review user posts.
+   - Decription: Review all posts (threads and replies) of the existing logged in user.
+   - Method: 'GET'
+   - Endpoint: '/user/posts'
+   - Response: One list of threads and one list of post.
+
+5. Update user
    - Description: Update the details of the existing logged in user.
    - Method: 'PUT'
    - Endpoint: '/user'
@@ -41,13 +47,13 @@ Base URL: [does not exist]
      - 'password': password
    - Response: Confirmation of user update.
 
-5. Logout
+6. Logout
    - Decription: To logout of current session.
    - Method: 'GET'
    - Endpoint: '/logout'
    - Response: Expired JWT Cookie to revoke login session.
 
-6. List users
+7. List users
    - Description: Retrieve a list of all users.
    - Method: 'GET'
    - Endpoint: '/users'
