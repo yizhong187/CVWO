@@ -41,7 +41,7 @@ func HandlerUpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	// Construct and execute SQL query to update the username if the name field is not left blank
+	// Update name if provided
 	if requestData.Name != "" {
 		updateQuery := fmt.Sprintf("UPDATE %s SET name = $1 WHERE id = $2", usersTable)
 		_, err := database.GetDB().Exec(updateQuery, requestData.Name, claims.Subject)
@@ -51,7 +51,7 @@ func HandlerUpdateUser(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Construct and execute SQL query to update the password if the password field is not left blank
+	// Update password if provided
 	if requestData.Password != "" {
 
 		// Hash password using util.HashPassword
