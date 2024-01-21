@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/go-chi/chi/v5"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 	"github.com/yizhong187/CVWO/database"
 
@@ -23,21 +23,21 @@ func HandlerCreateSubforum(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("DB_SUBFORUMS_TABLE is not set in the environment")
 	}
 
-	// Query the database for the user
-	name := chi.URLParam(r, "name")
-	user, err := util.QueryUser(name)
-	if err != nil {
-		if err.Error() == "User not found" {
-			util.RespondWithError(w, http.StatusNotFound, err.Error())
-		} else {
-			util.RespondWithError(w, http.StatusInternalServerError, err.Error())
-		}
+	// Retrieve the claims from the middleware context (util.AuthenticateUserMiddleware)
+	claims, ok := r.Context().Value("userClaims").(*jwt.RegisteredClaims)
+	if !ok {
+		util.RespondWithError(w, http.StatusInternalServerError, "Error processing user data")
 		return
 	}
 
-	// Check if user has "superuser" type to create subforum
-	if user.Type != "superuser" {
-		util.RespondWithError(w, http.StatusForbidden, "User does not have the required permissions")
+	// Check if the JWT Subject is a SUPERUSER
+	var userType string
+	userType, err := util.QueryUserType(claims.Subject)
+	if err != nil {
+		util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error querying user's type: \n%v", err))
+	}
+	if userType != "super" {
+		util.RespondWithError(w, http.StatusUnauthorized, "User does not have authority to view this info")
 		return
 	}
 
@@ -62,8 +62,8 @@ func HandlerCreateSubforum(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Construct and execute SQL query to insert new subforum
-	query := fmt.Sprintf("INSERT INTO %s (name, description, created_by, photo_url) VALUES ($1, $2, $3, $4)", subforumTable)
-	_, err = database.GetDB().Exec(query, requestData.Name, requestData.Description, user.ID, requestData.PhotoURL)
+	query := fmt.Sprintf("INSERT INTO %s (name, description, photo_url) VALUES ($1, $2, $3)", subforumTable)
+	_, err = database.GetDB().Exec(query, requestData.Name, requestData.Description, requestData.PhotoURL)
 	if err != nil {
 		util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: \n%v", err))
 		return
