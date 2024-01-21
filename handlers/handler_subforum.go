@@ -23,10 +23,10 @@ func HandlerSubforum(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("subforumTable is not set in the environment")
 	}
 
-	// Retrieve subforum name from URL query
+	// Retrieve subforumID from URL query
 	subforumID := chi.URLParam(r, "subforumID")
 	if subforumID == "" {
-		util.RespondWithError(w, http.StatusBadRequest, "Subforum's name is required")
+		util.RespondWithError(w, http.StatusBadRequest, "SubforumID is required")
 		return
 	}
 
