@@ -38,7 +38,7 @@ func HandlerUser(w http.ResponseWriter, r *http.Request) {
 			util.RespondWithError(w, http.StatusBadRequest, "User not found")
 			return
 		} else {
-			util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error retrieving user type: %v", err))
+			util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error retrieving user: %v", err))
 			return
 		}
 	}
