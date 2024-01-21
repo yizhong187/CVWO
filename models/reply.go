@@ -10,4 +10,7 @@ type Reply struct {
 	CreatedAt     time.Time `json:"createdAt"`
 	UpdatedAt     time.Time `json:"updatedAt"`
 	CreatedByName string    `json:"createdByName"`
+	ThreadName    string    `json:"threadName"`
+	SubforumID    int       `json:"subforumID"`
+	SubforumName  string    `json:"subforumName"`
 }

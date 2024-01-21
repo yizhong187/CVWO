@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -16,19 +17,34 @@ import (
 func HandlerAllReplies(w http.ResponseWriter, r *http.Request) {
 
 	godotenv.Load(".env")
+	usersTable := os.Getenv("DB_USERS_TABLE")
+	if usersTable == "" {
+		log.Fatal("usersTable is not set in the environment")
+	}
+	threadsTable := os.Getenv("DB_THREADS_TABLE")
+	if usersTable == "" {
+		log.Fatal("threadsTable is not set in the environment")
+	}
 	repliesTable := os.Getenv("DB_REPLIES_TABLE")
-	usersTable := os.Getenv("DB_USERS_TABLE") // Assuming you have this environment variable
-
-	// Modify the query to join with users table to get createdByName
-	query := fmt.Sprintf(`
-        SELECT r.id, r.thread_id, r.content, r.created_by, u.name AS created_by_name, r.created_at, r.updated_at
-        FROM %s r
-        INNER JOIN %s u ON r.created_by = u.id
-        WHERE r.thread_id = $1
-				ORDER BY r.id DESC
-    `, repliesTable, usersTable)
+	if usersTable == "" {
+		log.Fatal("repliesTable is not set in the environment")
+	}
+	subforumsTable := os.Getenv("DB_SUBFORUMS_TABLE")
+	if subforumsTable == "" {
+		log.Fatal("subforumTable is not set in the environment")
+	}
 
 	threadID := chi.URLParam(r, "threadID")
+
+	query := fmt.Sprintf(`
+	SELECT r.id, r.thread_id, t.title AS thread_name, t.subforum_id, sf.name AS subforum_name, r.content, r.created_by, u.name AS created_by_name, r.created_at, r.updated_at
+	FROM %s r
+	INNER JOIN %s u ON r.created_by = u.id
+	INNER JOIN %s t ON r.thread_id = t.id
+	INNER JOIN %s sf ON t.subforum_id = sf.id
+	WHERE r.thread_id = $1
+	ORDER BY r.id DESC
+`, repliesTable, usersTable, threadsTable, subforumsTable)
 
 	// Execute SQL query and return a rows result set
 	rows, err := database.GetDB().Query(query, threadID)
@@ -42,7 +58,8 @@ func HandlerAllReplies(w http.ResponseWriter, r *http.Request) {
 	var replies []models.Reply
 	for rows.Next() {
 		var reply models.Reply
-		err := rows.Scan(&reply.ID, &reply.ThreadID, &reply.Content, &reply.CreatedBy, &reply.CreatedByName, &reply.CreatedAt, &reply.UpdatedAt)
+		err := rows.Scan(&reply.ID, &reply.ThreadID, &reply.ThreadName, &reply.SubforumID, &reply.SubforumName,
+			&reply.Content, &reply.CreatedBy, &reply.CreatedByName, &reply.CreatedAt, &reply.UpdatedAt)
 		if err != nil {
 			util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error scanning row: \n%v", err))
 			return
