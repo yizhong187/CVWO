@@ -13,4 +13,5 @@ type Thread struct {
 	UpdatedAt     time.Time `json:"updatedAt"`
 	ReplyCount    int       `json:"replyCount"`
 	CreatedByName string    `json:"createdByName"`
+	SubforumName  string    `json:"subforumName"`
 }

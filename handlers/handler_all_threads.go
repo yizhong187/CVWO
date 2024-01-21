@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -16,19 +17,33 @@ import (
 func HandlerAllThreads(w http.ResponseWriter, r *http.Request) {
 
 	godotenv.Load(".env")
-	threadsTable := os.Getenv("DB_THREADS_TABLE")
 	usersTable := os.Getenv("DB_USERS_TABLE")
+	if usersTable == "" {
+		log.Fatal("usersTable is not set in the environment")
+	}
+	threadsTable := os.Getenv("DB_THREADS_TABLE")
+	if usersTable == "" {
+		log.Fatal("threadsTable is not set in the environment")
+	}
 	repliesTable := os.Getenv("DB_REPLIES_TABLE")
+	if usersTable == "" {
+		log.Fatal("repliesTable is not set in the environment")
+	}
+	subforumsTable := os.Getenv("DB_SUBFORUMS_TABLE")
+	if subforumsTable == "" {
+		log.Fatal("subforumTable is not set in the environment")
+	}
 
 	query := fmt.Sprintf(`
-		SELECT t.id, t.subforum_id, t.title, t.content, t.created_by, u.name, t.is_pinned, t.created_at, t.updated_at, COUNT(r.id) AS reply_count
-		FROM %s t
-		INNER JOIN %s u ON t.created_by = u.id
-		LEFT JOIN %s r ON t.id = r.thread_id
-		WHERE t.subforum_id = $1
-		GROUP BY t.id, u.name
-		ORDER BY t.id DESC
-		`, threadsTable, usersTable, repliesTable)
+	SELECT t.id, t.subforum_id, sf.name AS subforum_name, t.title, t.content, t.created_by, u.name, t.is_pinned, t.created_at, t.updated_at, COUNT(r.id) AS reply_count
+	FROM %s t
+	INNER JOIN %s u ON t.created_by = u.id
+	LEFT JOIN %s r ON t.id = r.thread_id
+	INNER JOIN %s sf ON t.subforum_id = sf.id
+	WHERE t.subforum_id = $1
+	GROUP BY t.id, u.name, sf.name
+	ORDER BY t.id DESC
+	`, threadsTable, usersTable, repliesTable, subforumsTable)
 
 	subforumID := chi.URLParam(r, "subforumID")
 
@@ -44,8 +59,8 @@ func HandlerAllThreads(w http.ResponseWriter, r *http.Request) {
 	var threads []models.Thread
 	for rows.Next() {
 		var thread models.Thread
-		err := rows.Scan(&thread.ID, &thread.SubforumID, &thread.Title, &thread.Content, &thread.CreatedBy,
-			&thread.CreatedByName, &thread.IsPinned, &thread.CreatedAt, &thread.UpdatedAt, &thread.ReplyCount)
+		err := rows.Scan(&thread.ID, &thread.SubforumID, &thread.SubforumName, &thread.Title, &thread.Content, &thread.CreatedBy, &thread.CreatedByName,
+			&thread.IsPinned, &thread.CreatedAt, &thread.UpdatedAt, &thread.ReplyCount)
 		if err != nil {
 			util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error scanning row: \n%v", err))
 			return
