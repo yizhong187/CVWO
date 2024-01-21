@@ -27,19 +27,13 @@ Base URL: [does not exist]
    - Response: User information, with JWT.
 
 3. Review user
-   - Decription: Review the details of the existing logged in user.
+   - Decription: Review the account details of the existing logged in user.
    - Method: 'GET'
    - Endpoint: '/user'
    - Response: User information.
 
-4. Review user posts.
-   - Decription: Review all posts (threads and replies) of the existing logged in user.
-   - Method: 'GET'
-   - Endpoint: '/user/posts'
-   - Response: One list of threads and one list of post.
-
-5. Update user
-   - Description: Update the details of the existing logged in user.
+4. Update user
+   - Description: Update the account details of the existing logged in user.
    - Method: 'PUT'
    - Endpoint: '/user'
    - Request Body: 
@@ -47,17 +41,18 @@ Base URL: [does not exist]
      - 'password': password
    - Response: Confirmation of user update.
 
-6. Logout
+5. Logout
    - Decription: To logout of current session.
    - Method: 'GET'
    - Endpoint: '/logout'
    - Response: Expired JWT Cookie to revoke login session.
 
-7. List users
-   - Description: Retrieve a list of all users.
+6. Review user posts.
+   - Decription: Review all posts (threads and replies) of existing user.
    - Method: 'GET'
-   - Endpoint: '/users'
-   - Response: A list of all users.
+   - Endpoint: '/user/{userName}/posts'
+   - Response: One list of threads and one list of post.
+
 
 
 ## Subforum Related Endpoints
@@ -179,7 +174,7 @@ Base URL: [does not exist]
 1. Create subforum [WORK IN PROGRESS]
    - Description: Create new subforum. User must be SUPERUSER.
    - Method: 'POST'
-   - Endpoint: '/subforum'
+   - Endpoint: '/superuser/subforums'
    - Request Body: 
      - 'name': name of new subforum
      - 'description': description of new subforum
@@ -189,7 +184,7 @@ Base URL: [does not exist]
 2. Update existing subforum [WORK IN PROGRESS]
    - Description: Update the details of an existing subforum. User must be SUPERUSER.
    - Method: 'PUT'
-   - Endpoint: '/subforum/{subforumID}'
+   - Endpoint: '/superuser/subforums/{subforumID}'
    - URL Parameters: 
      - 'subforumID': unique identifier of subforum
    - Request Body: 
@@ -197,6 +192,12 @@ Base URL: [does not exist]
      - 'description': new description of subforum
      - 'photoURL': new link to cover photo of subforum
    - Response: Confirmation of subforum creation.
+
+3. List users 
+   - Description: Retrieve a list of all users.
+   - Method: 'GET'
+   - Endpoint: '/users'
+   - Response: A list of all users.
 
 
 
