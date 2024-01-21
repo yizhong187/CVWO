@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 	"github.com/yizhong187/CVWO/database"
 	"github.com/yizhong187/CVWO/models"
@@ -17,6 +18,29 @@ func HandlerAllUsers(w http.ResponseWriter, r *http.Request) {
 	godotenv.Load(".env")
 
 	usersTable := os.Getenv("DB_USERS_TABLE")
+	if usersTable == "" {
+		util.RespondWithError(w, http.StatusInternalServerError, "DB_USERS_TABLE is not set in the environment")
+		return
+	}
+
+	// Retrieve the claims from the middleware context (util.AuthenticateUserMiddleware)
+	claims, ok := r.Context().Value("userClaims").(*jwt.RegisteredClaims)
+	if !ok {
+		util.RespondWithError(w, http.StatusInternalServerError, "Error processing user data")
+		return
+	}
+
+	// Check if the JWT Subject is a SUPERUSER
+	var userType string
+	userType, err := util.QueryUserType(claims.Subject)
+	if err != nil {
+		util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error querying user's type: \n%v", err))
+	}
+	if userType != "super" {
+		util.RespondWithError(w, http.StatusUnauthorized, "User does not have authority to view this info")
+		return
+	}
+
 	query := fmt.Sprintf("SELECT id, name, type, created_at FROM %s", usersTable)
 
 	// Execute sql query and return a rows result set
