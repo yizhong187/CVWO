@@ -44,14 +44,11 @@ func main() {
 	v2Router.Post("/signup", handlers.HandlerSignup)
 	v2Router.Post("/login", handlers.HandlerLogin)
 	v2Router.Get("/logout", handlers.HandlerLogout)
-
-	v2Router.With(util.AuthenticateUserMiddleware).Get("/user", handlers.HandlerUser)
-	v2Router.With(util.AuthenticateUserMiddleware).Put("/user", handlers.HandlerUpdateUser)
-	v2Router.With(util.AuthenticateUserMiddleware).Get("/user/posts", handlers.HandlerUserPosts)
-
-	v2Router.Get("/users", handlers.HandlerAllUsers)
+	v2Router.With(util.AuthenticateUserMiddleware).Get("/users", handlers.HandlerAllUsers)
 
 	v2Router.Mount("/subforums", routers.SubforumRouter())
+	v2Router.Mount("/user", routers.UserRouter())
+	v2Router.Mount("/superuser", routers.SuperuserRouter())
 
 	// Mount v2Router under /v2 prefix
 	router.Mount("/v2", v2Router)
