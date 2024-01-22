@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -10,6 +11,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 	"github.com/yizhong187/CVWO/database"
+	"github.com/yizhong187/CVWO/models"
 	"github.com/yizhong187/CVWO/util"
 )
 
@@ -65,6 +67,20 @@ func HandlerUpdateUser(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// SQL query to get the updated user
+	var user models.User
+	query := fmt.Sprintf("SELECT id, name, type, created_at FROM %s WHERE id = $1", usersTable)
+	err := database.GetDB().QueryRow(query, claims.Subject).Scan(&user.ID, &user.Name, &user.Type, &user.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			util.RespondWithError(w, http.StatusBadRequest, "User not found")
+			return
+		} else {
+			util.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error retrieving user: %v", err))
+			return
+		}
+	}
+
 	// Respond with a success message
-	util.RespondWithJSON(w, http.StatusOK, struct{ Message string }{"User updated successfully"})
+	util.RespondWithJSON(w, http.StatusOK, user)
 }
