@@ -73,8 +73,8 @@ For the test data, several subforums have been set up. Additionally, 2 normal us
    - type: normal
    - password: password 
 3. Super user 1
-   - name: timmy
-   - type: normal
+   - name: god
+   - type: super
    - password: god'spassword 
 
 
