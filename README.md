@@ -1,10 +1,62 @@
-# CVWO
-This is a repo for CVWO's forum webapp backend.
+# Setup Guide for CVWO ForumApp Backend
+
+## Prerequisites
+Before you begin, ensure you have the following installed:
+- GoLang (version x.x or higher): [GoLang Installation Guide](https://golang.org/doc/install)
+- PostgreSQL (version x.x or higher): [PostgreSQL Installation Guide](https://www.postgresql.org/download/)
+
+## Installation and Configuration
+
+### Cloning the Repository
+Clone the ForumApp backend repository from GitHub using the following commands:
+```bash
+git clone https://github.com/yizhong187/CVWO.git
+cd CVWO
+```
+
+### Setting Up the Database
+1. Install PostgreSQL if you haven't already.
+2. Create a new database named `forum`:
+   ```sql
+   CREATE DATABASE forum;
+   ```
+3. Import the initial database schema (if provided in your repository):
+   ```bash
+   psql -U [username] -d forum -f [path-to-schema-file]
+   ```
+
+### Configuring the Application
+1. Set up the necessary environment variables in a `.env` file or your environment:
+   - `PORT`: The port number on which the backend server will run. By default, it's set to 8080. You can change this if you have another service running on this port or if you prefer to use a different port.
+   - `DB_HOST`: The hostname or IP address of the database server. For local development, it's usually set to localhost. 
+   - `DB_PORT`: The port number your PostgreSQL database is listening on. The default PostgreSQL port is `5432`.
+   - `DB_USER`: The username for accessing the PostgreSQL database. By default, it's set to `postgres`, which is the default superuser account in PostgreSQL. Use a different account if you have created specific users for your database.
+   - `DB_NAME`: The name of the database that the application will connect to. Unless you changed the database name, it will be set as forum. Ensure that you have already created this database on your PostgreSQL server.
+   - `DB_SSLMODE`: This sets the SSL mode for connecting to the database. By default, it's set to `disable` for local development.
+   - `DB_PASSWORD`: The password for the database user. 
+
+   - The tables are set as follow based on the schema provided: 
+     - `DB_TESTING_USERS_TABLE` = `public.testing_users`
+     - `DB_USERS_TABLE` = `public.users`
+     - `DB_THREADS_TABLE` = `public.threads`
+     - `DB_SUBFORUMS_TABLE` = `public.subforums`
+     - `DB_REPLIES_TABLE` = `public.replies`
+     - `DB_ADMINS_TABLE` = `public.admins`
+
+   - `SECRET_KEY`: An important key used for hashing user passwords. It should be a complex and unique string for security purposes, never shared or exposed publicly.
 
 
-## API Overview
-Base URL: [does not exist]
+### Building and Running the Application
+Build and start the application using:
+```bash
+go build
+./CVWO
+```
 
+### Usage
+Base URL: By default, it is set to `localhost:8080/v2`
+This application supports various CRUD operations through its RESTful API. 
+Use tools like `curl`, Postman, or Thunder Client to interact with and test the API.
 
 ## User Related Endpoints
 
@@ -171,7 +223,7 @@ Base URL: [does not exist]
 
 ## SUPERUSER Related Endpoints: 
 
-1. Create subforum [WORK IN PROGRESS]
+1. Create subforum 
    - Description: Create new subforum. User must be SUPERUSER.
    - Method: 'POST'
    - Endpoint: '/superuser/subforums'
@@ -181,7 +233,7 @@ Base URL: [does not exist]
      - 'photoURL': link to cover photo of new subforum
    - Response: Confirmation of subforum creation.
 
-2. Update existing subforum [WORK IN PROGRESS]
+2. Update existing subforum 
    - Description: Update the details of an existing subforum. User must be SUPERUSER.
    - Method: 'PUT'
    - Endpoint: '/superuser/subforums/{subforumID}'
@@ -200,22 +252,9 @@ Base URL: [does not exist]
    - Response: A list of all users.
 
 
+## Troubleshooting
+Encounter an issue? Check out these common problems and solutions:
+- **Database Connection Error**: Ensure your PostgreSQL is running and the connection string is correct.
+- **Build Failures**: Verify that you have the correct version of GoLang installed.
 
-
-
-
-
-
-
-
-
-
-
-
-   - Description: 
-   - Method: ''
-   - Endpoint: ''
-   - Request Body: 
-     - 
-   - Response: .
-
+For more help, please open an issue on the [GitHub issues page](https://github.com/yizhong187/CVWO/issues).
