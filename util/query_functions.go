@@ -74,6 +74,7 @@ func QueryUserID(username string) (string, error) {
 	return userID, nil
 }
 
+// [DEPRECATED]
 func IsAdminOf(username string, subforumID string) (bool, error) {
 	// Use QueryUser to find the user with the username
 	user, err := QueryUser(username)
@@ -94,6 +95,7 @@ func IsAdminOf(username string, subforumID string) (bool, error) {
 	}
 }
 
+// [DEPRECATED]
 func checkAdminOfSubforum(userID, subforumID string) (bool, error) {
 	godotenv.Load(".env")
 	adminsTable := os.Getenv("DB_ADMINS_TABLE")
