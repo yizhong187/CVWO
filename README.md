@@ -32,7 +32,7 @@ cd CVWO
    Replace `[username]` with your PostgreSQL username. By default, it is `postgres`.
 4. After setting up the schema, import the data from the `data_backup.sql` file, also located in the `database` folder:
    ```bash
-   psql -U [username] -d forum -f database/data_backup.sql
+   psql -U [username] -d forum -f database/data.sql
    ```
    This will populate the database with test data.
 
@@ -81,6 +81,7 @@ For the test data, several subforums have been set up. Additionally, 2 normal us
    - password: god'spassword 
 
 <br>
+
 ### User Related Endpoints
 
 1. Sign up
@@ -130,6 +131,7 @@ For the test data, several subforums have been set up. Additionally, 2 normal us
 
 
 <br>
+
 ### Subforum Related Endpoints
 
 1. List subforums
@@ -147,6 +149,7 @@ For the test data, several subforums have been set up. Additionally, 2 normal us
    - Response: Detailed information of the subforum.
 
 <br>
+
 ### Thread Related Endpoints
 
 1. List threads of a subforum
@@ -199,6 +202,7 @@ For the test data, several subforums have been set up. Additionally, 2 normal us
    - Response: Confirmation of thread deletion.
 
 <br>
+
 ### Reply Related Endpoints
 
 1. List replies of a thread
@@ -244,6 +248,7 @@ For the test data, several subforums have been set up. Additionally, 2 normal us
    - Response: Confirmation of reply deletion.
 
 <br>
+
 ### SUPERUSER Related Endpoints: 
 
 1. Create subforum 
