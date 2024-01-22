@@ -1,5 +1,9 @@
 # Setup Guide for CVWO ForumApp Backend
 
+## Introduction
+
+Welcome to the setup guide for the backend of ForumApp built using golang and postgres. This document will guide you through the process of setting up the application on your local server.
+
 ## Prerequisites
 Before you begin, ensure you have the following installed:
 - GoLang: [GoLang Installation Guide](https://golang.org/doc/install)
@@ -51,11 +55,10 @@ cd CVWO
    - `SECRET_KEY`: An important key used for hashing user passwords. It should be a complex and unique string for security purposes, never shared or exposed publicly.
 
 
-### Building and Running the Application
-Build and start the application using:
+### Running the Application
+Start the application using:
 ```bash
-go build
-./CVWO
+go run .
 ```
 
 ## Usage
