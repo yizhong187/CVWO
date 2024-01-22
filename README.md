@@ -77,7 +77,7 @@ For the test data, several subforums have been set up. Additionally, 2 normal us
    - type: super
    - password: god'spassword 
 
-
+<br>
 ### User Related Endpoints
 
 1. Sign up
@@ -126,7 +126,7 @@ For the test data, several subforums have been set up. Additionally, 2 normal us
    - Response: One list of threads and one list of post.
 
 
-
+<br>
 ### Subforum Related Endpoints
 
 1. List subforums
@@ -143,8 +143,8 @@ For the test data, several subforums have been set up. Additionally, 2 normal us
      - 'subforumID': unique identifier of the subforum.
    - Response: Detailed information of the subforum.
 
-
-## Thread Related Endpoints
+<br>
+### Thread Related Endpoints
 
 1. List threads of a subforum
    - Description: Retrieve a list of all threads in a specific subforum.
@@ -195,7 +195,7 @@ For the test data, several subforums have been set up. Additionally, 2 normal us
      - 'threadID': unique identifier of thread
    - Response: Confirmation of thread deletion.
 
-
+<br>
 ### Reply Related Endpoints
 
 1. List replies of a thread
@@ -240,7 +240,7 @@ For the test data, several subforums have been set up. Additionally, 2 normal us
      - 'replyID': unique identifier of reply
    - Response: Confirmation of reply deletion.
 
-
+<br>
 ### SUPERUSER Related Endpoints: 
 
 1. Create subforum 
