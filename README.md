@@ -2,8 +2,8 @@
 
 ## Prerequisites
 Before you begin, ensure you have the following installed:
-- GoLang (version x.x or higher): [GoLang Installation Guide](https://golang.org/doc/install)
-- PostgreSQL (version x.x or higher): [PostgreSQL Installation Guide](https://www.postgresql.org/download/)
+- GoLang: [GoLang Installation Guide](https://golang.org/doc/install)
+- PostgreSQL: [PostgreSQL Installation Guide](https://www.postgresql.org/download/)
 
 ## Installation and Configuration
 
@@ -20,10 +20,17 @@ cd CVWO
    ```sql
    CREATE DATABASE forum;
    ```
-3. Import the initial database schema (if provided in your repository):
+   Run this command in your PostgreSQL command line interface or through a tool like pgAdmin.
+3. From the root of your project directory, import the schema file `schema.sql` located in the `database` folder::
    ```bash
-   psql -U [username] -d forum -f [path-to-schema-file]
+   psql -U [username] -d forum -f database/schema.sql
    ```
+   Replace `[username]` with your PostgreSQL username. By default, it is `postgres`.
+4. After setting up the schema, import the data from the `data_backup.sql` file, also located in the `database` folder:
+   ```bash
+   psql -U [username] -d forum -f database/data_backup.sql
+   ```
+   This will populate the database with test data.
 
 ### Configuring the Application
 1. Set up the necessary environment variables in a `.env` file or your environment:
@@ -36,12 +43,10 @@ cd CVWO
    - `DB_PASSWORD`: The password for the database user. 
 
    - The tables are set as follow based on the schema provided: 
-     - `DB_TESTING_USERS_TABLE` = `public.testing_users`
      - `DB_USERS_TABLE` = `public.users`
      - `DB_THREADS_TABLE` = `public.threads`
      - `DB_SUBFORUMS_TABLE` = `public.subforums`
      - `DB_REPLIES_TABLE` = `public.replies`
-     - `DB_ADMINS_TABLE` = `public.admins`
 
    - `SECRET_KEY`: An important key used for hashing user passwords. It should be a complex and unique string for security purposes, never shared or exposed publicly.
 
@@ -53,12 +58,27 @@ go build
 ./CVWO
 ```
 
-### Usage
+## Usage
 Base URL: By default, it is set to `localhost:8080/v2`
 This application supports various CRUD operations through its RESTful API. 
 Use tools like `curl`, Postman, or Thunder Client to interact with and test the API.
 
-## User Related Endpoints
+For the test data, several subforums have been set up. Additionally, 2 normal users and 1 super user have also been included. Note that the passwords in the database are hashed.
+1. Normal user 1
+   - name: timmy
+   - type: normal
+   - password: password 
+2. Normal user 2
+   - name: yizhong187
+   - type: normal
+   - password: password 
+3. Super user 1
+   - name: timmy
+   - type: normal
+   - password: god'spassword 
+
+
+### User Related Endpoints
 
 1. Sign up
    - Description: For registration of new users.
@@ -107,7 +127,7 @@ Use tools like `curl`, Postman, or Thunder Client to interact with and test the 
 
 
 
-## Subforum Related Endpoints
+### Subforum Related Endpoints
 
 1. List subforums
    - Description: Retrieve a list of all subforums.
@@ -176,7 +196,7 @@ Use tools like `curl`, Postman, or Thunder Client to interact with and test the 
    - Response: Confirmation of thread deletion.
 
 
-## Reply Related Endpoints
+### Reply Related Endpoints
 
 1. List replies of a thread
    - Description: Retrieve a list of all replies in a specific thread.
@@ -221,7 +241,7 @@ Use tools like `curl`, Postman, or Thunder Client to interact with and test the 
    - Response: Confirmation of reply deletion.
 
 
-## SUPERUSER Related Endpoints: 
+### SUPERUSER Related Endpoints: 
 
 1. Create subforum 
    - Description: Create new subforum. User must be SUPERUSER.
