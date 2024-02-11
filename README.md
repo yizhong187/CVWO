@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Welcome to the setup guide for the backend of ForumApp built using golang and postgres. This document will guide you through the process of setting up the application on your local server.
+Welcome to the setup guide for the backend of ForumApp built using Golang and PostgreSQL. This document will guide you through the process of setting up the application on your local server.
 
 ## Prerequisites
 Before you begin, ensure you have the following installed:
